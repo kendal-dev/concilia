@@ -1,1 +1,27 @@
-  a n n o t a t e d - t y p e s = = 0 . 8 . 0   b a r e - r p c = = 0 . 0 . 1   c e r t i f i = = 2 0 2 6 . 7 . 2 2   c h a r s e t - n o r m a l i z e r = = 3 . 5 . 1   c o l o r a m a = = 0 . 4 . 6   c o m p a c t - e n c o d i n g = = 0 . 0 . 1   g r e e n l e t = = 3 . 5 . 5   i d n a = = 3 . 1 9   i n i c o n f i g = = 2 . 3 . 0   m a r k d o w n - i t - p y = = 4 . 2 . 0   m d u r l = = 0 . 1 . 2   p a c k a g i n g = = 2 6 . 3   p i l l o w = = 1 2 . 3 . 0   p l u g g y = = 1 . 6 . 0   p y d a n t i c = = 2 . 1 3 . 4   p y d a n t i c _ c o r e = = 2 . 4 6 . 4   P y g m e n t s = = 2 . 2 1 . 0   P y M y S Q L = = 1 . 2 . 0   p y t e s t = = 9 . 1 . 1   p y t h o n - d o t e n v = = 1 . 2 . 3   r e q u e s t s = = 2 . 3 4 . 2   r i c h = = 1 5 . 0 . 0   S Q L A l c h e m y = = 2 . 0 . 5 2   t e t h e r t o - q v a c - s d k = = 0 . 1 7 . 1   t y p i n g - i n s p e c t i o n = = 0 . 4 . 4   t y p i n g _ e x t e n s i o n s = = 4 . 1 6 . 0   u r l l i b 3 = = 2 . 7 . 0   
+annotated-types==0.8.0
+bare-rpc==0.0.1
+certifi==2026.7.22
+charset-normalizer==3.5.1
+colorama==0.4.6
+compact-encoding==0.0.1
+greenlet==3.5.5
+idna==3.19
+iniconfig==2.3.0
+markdown-it-py==4.2.0
+mdurl==0.1.2
+packaging==26.3
+pillow==12.3.0
+pluggy==1.6.0
+pydantic==2.13.4
+pydantic_core==2.46.4
+Pygments==2.21.0
+PyMySQL==1.2.0
+pytest==9.1.1
+python-dotenv==1.2.3
+requests==2.34.2
+rich==15.0.0
+SQLAlchemy==2.0.52
+tetherto-qvac-sdk==0.17.1
+typing-inspection==0.4.4
+typing_extensions==4.16.0
+urllib3==2.7.0

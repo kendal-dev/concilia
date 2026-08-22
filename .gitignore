@@ -3,3 +3,6 @@ venv/
 __pycache__/
 .qvac_cache/
 node_modules/
+*.gguf
+dummy.jpg
+logs/
