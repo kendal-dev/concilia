@@ -1,0 +1,13 @@
+services:
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: concilia
+      MARIADB_DATABASE: concilia
+      MARIADB_USER: concilia
+      MARIADB_PASSWORD: concilia
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/01-seed.sql
+    command: --innodb-buffer-pool-size=128M

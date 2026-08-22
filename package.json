@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@qvac/sdk": "^0.17.1"
+  }
+}
