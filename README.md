@@ -23,7 +23,22 @@ caso natural para IA local.
 ## 🎯 Integración QVAC — permalinks
 
 <!-- PERMALINKS -->
-_Se generan con `python scripts/permalinks.py`._
+
+| Que | Donde |
+|---|---|
+| Carga del par OCR (detector + reconocedor) | [`ocr/engine.py:192`](https://github.com/kendal-dev/concilia/blob/0a6a2ad72766b0973660dd6d83a4e8f6f042ba0e/ocr/engine.py#L192-L195) |
+| Inferencia OCR sobre la imagen | [`ocr/engine.py:301`](https://github.com/kendal-dev/concilia/blob/0a6a2ad72766b0973660dd6d83a4e8f6f042ba0e/ocr/engine.py#L301-L307) |
+| Barrido de rotacion | [`ocr/engine.py:236`](https://github.com/kendal-dev/concilia/blob/0a6a2ad72766b0973660dd6d83a4e8f6f042ba0e/ocr/engine.py#L236-L248) |
+| Cliente QVAC: interfaz del orquestador | [`backend/core/llm/qvac.py:234`](https://github.com/kendal-dev/concilia/blob/0a6a2ad72766b0973660dd6d83a4e8f6f042ba0e/backend/core/llm/qvac.py#L234-L239) |
+| Pipeline de dos etapas (OCR -> texto -> JSON) | [`backend/core/llm/qvac.py:239`](https://github.com/kendal-dev/concilia/blob/0a6a2ad72766b0973660dd6d83a4e8f6f042ba0e/backend/core/llm/qvac.py#L239-L253) |
+| Carga del modelo de texto | [`backend/core/llm/qvac.py:166`](https://github.com/kendal-dev/concilia/blob/0a6a2ad72766b0973660dd6d83a4e8f6f042ba0e/backend/core/llm/qvac.py#L166-L170) |
+| Generacion (llamacpp-completion) | [`backend/core/llm/qvac.py:177`](https://github.com/kendal-dev/concilia/blob/0a6a2ad72766b0973660dd6d83a4e8f6f042ba0e/backend/core/llm/qvac.py#L177-L185) |
+| Seleccion del motor real | [`backend/core/llm/factory.py:40`](https://github.com/kendal-dev/concilia/blob/0a6a2ad72766b0973660dd6d83a4e8f6f042ba0e/backend/core/llm/factory.py#L40-L46) |
+| Verificacion de valores contra el texto OCR | [`confidence/detectors.py:72`](https://github.com/kendal-dev/concilia/blob/0a6a2ad72766b0973660dd6d83a4e8f6f042ba0e/confidence/detectors.py#L72-L82) |
+| Descarga de modelos desde el registry | [`scripts/setup_models.py:53`](https://github.com/kendal-dev/concilia/blob/0a6a2ad72766b0973660dd6d83a4e8f6f042ba0e/scripts/setup_models.py#L53-L61) |
+
+_Enlaces fijados al commit `0a6a2ad727`._
+
 <!-- /PERMALINKS -->
 
 ### Capacidades del SDK que se usan
