@@ -73,6 +73,27 @@ SIN_LECTURA = json.dumps({
 })
 
 
+def _json_suelto(crudo):
+    """Recorta y parsea el JSON de la respuesta, o None. Misma regla que usa el
+    orquestador (`_salvage_json`): desde la primera llave hasta la ultima."""
+    if not crudo:
+        return None
+    i, j = crudo.find("{"), crudo.rfind("}")
+    if i == -1 or j <= i:
+        return None
+    try:
+        return json.loads(crudo[i:j + 1])
+    except json.JSONDecodeError:
+        return None
+
+
+def _hay_datos_utiles(datos):
+    """Sirve para reconciliar? Mismo criterio que `ExtractedInvoice.has_minimum_data`."""
+    if not isinstance(datos, dict):
+        return False
+    return bool(datos.get("supplier_tax_id")) and datos.get("total_amount") is not None
+
+
 def _bandera(clave):
     return os.environ.get(clave, "").strip().lower() in ("1", "true", "si", "yes", "on")
 
@@ -216,11 +237,8 @@ class QvacLLMClient(LLMClient):
         return motor.ejecutar(self._extraer(motor, image_bytes, feedback))
 
     async def _extraer(self, motor, image_bytes, feedback):
-        # Las facturas fotografiadas suelen venir giradas 90 grados y sin EXIF de
-        # orientacion. El barrido prueba varios angulos y se queda con la mejor
-        # lectura, a costa de una pasada de OCR por angulo: por eso es opcional y
-        # se enciende con QVAC_OCR_ROTAR=1 cuando el dataset lo justifica.
-        if _bandera("QVAC_OCR_ROTAR"):
+        modo = os.environ.get("QVAC_OCR_ROTAR", "auto").strip().lower()
+        if modo in ("1", "true", "si", "yes", "on"):
             ocr = await motor.ocr.leer_orientada(datos=image_bytes)
         else:
             ocr = await motor.ocr.leer_bytes(image_bytes)
@@ -252,16 +270,42 @@ class QvacLLMClient(LLMClient):
             EXTRACTION_SYSTEM, "\n".join(partes), GEN_EXTRACCION,
             json_estricto=_bandera("QVAC_JSON_ESTRICTO"))
         extraccion_s = round(time.time() - t0, 2)
+        datos = _json_suelto(crudo)
 
-        verificados = {}
-        try:
-            verificados = _verificar_valores(json.loads(crudo), texto)
-        except (json.JSONDecodeError, AttributeError, TypeError):
-            # Si no parsea, el orquestador lo va a rechazar y reintentar. No es
-            # tarea de esta capa arreglarlo: la interfaz devuelve texto crudo.
-            pass
+        # --- Escalada por rotacion --------------------------------------------
+        # Una foto de factura girada 90 grados produce texto ilegible, y el sistema
+        # responde UNCERTAIN correctamente: no puede leer, no inventa. Pero antes de
+        # rendirse conviene descartar que el problema sea solo la orientacion.
+        #
+        # El barrido cuesta una pasada de OCR por angulo, asi que NO se corre de
+        # entrada: se dispara solo cuando la primera lectura no dio ni NIT ni total,
+        # que es la firma de una imagen mal orientada. En un documento derecho no
+        # cuesta nada; en uno girado, lo rescata. Los angulos probados y el elegido
+        # quedan en la evidencia.
+        rotacion = None
+        if (modo == "auto" and not _hay_datos_utiles(datos)
+                and (ocr.get("raw_text") or "").strip()):
+            ocr = await motor.ocr.leer_orientada(datos=image_bytes)
+            texto2 = (ocr.get("raw_text") or "").strip()[:limite]
+            rotacion = {"aplicada": ocr.get("rotacion_aplicada"),
+                        "probadas": ocr.get("rotaciones_probadas")}
+            if texto2 and texto2 != texto:
+                texto = texto2
+                partes = ["TEXTO EXTRAIDO POR OCR DEL DOCUMENTO:", "---", texto, "---"]
+                if feedback:
+                    partes += ["", feedback]
+                partes.append("Devolve unicamente el objeto JSON del esquema.")
+                t1 = time.time()
+                crudo = await motor.completar(
+                    EXTRACTION_SYSTEM, "\n".join(partes), GEN_EXTRACCION,
+                    json_estricto=_bandera("QVAC_JSON_ESTRICTO"))
+                extraccion_s = round(extraccion_s + time.time() - t1, 2)
+                datos = _json_suelto(crudo)
+
+        verificados = _verificar_valores(datos, texto) if datos else {}
 
         self.ultima_evidencia = {
+            "rotacion": rotacion,
             "archivo": self.filename,
             "texto_ocr": texto,
             "ocr": {k: v for k, v in ocr.items() if k != "raw_text"},
