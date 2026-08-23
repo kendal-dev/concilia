@@ -23,3 +23,6 @@ streamlit==1.62.0
 # Tests
 pytest==9.1.1
 httpx==0.28.1
+
+# Vista de auditoria en terminal (report/terminal.py)
+rich==15.0.0
