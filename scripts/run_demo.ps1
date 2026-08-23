@@ -6,7 +6,7 @@
         .\scripts\run_demo.ps1 -Bajar          # apaga backend y frontend
 
     Por que existe: la primera peticion al backend carga detector, reconocedor y
-    modelo de texto (~78 s medidos en este equipo). Si eso ocurre cuando el usuario
+    modelo de texto (~50 s medidos en este equipo). Si eso ocurre cuando el usuario
     sube su primer documento, la demo parece rota. Aca se paga durante el arranque:
     apenas /health responde, el script manda un recibo de calentamiento por su
     cuenta, y para cuando abris la UI los modelos ya estan en memoria.
@@ -97,7 +97,7 @@ if ($salud.llm_client -ne "qvac") {
 # ----------------------------------------------------- 4. precalentar modelos
 Write-Host "`n[4/5] precalentamiento" -ForegroundColor White
 if ($SinCalentar) {
-    Nota "omitido por -SinCalentar: la primera subida va a tardar ~78 s"
+    Nota "omitido por -SinCalentar: la primera subida va a tardar ~50 s"
 } elseif (-not (Test-Path $Recibo)) {
     Aviso "no encuentro $Recibo; omito el precalentamiento"
 } else {
@@ -135,11 +135,11 @@ if ($SinCalentar) {
     } catch { Nota "no pude leer /openapi.json; uso $ruta / '$campo'" }
 
     Nota "POST $ruta (campo '$campo') con $Recibo"
-    Nota "la primera vez tarda ~78 s: es la carga de los tres modelos"
+    Nota "la primera vez tarda ~50 s: es la carga de los tres modelos"
     $t0 = Get-Date
     $codigo = & curl.exe -s -o NUL -w "%{http_code}" -X POST "$BASE$ruta" -F "$campo=@$Recibo" --max-time 300
     $seg = [math]::Round(((Get-Date) - $t0).TotalSeconds, 1)
-    if ($codigo -eq "200") { Bien "modelos cargados ($seg s). La proxima subida va a ~15 s." }
+    if ($codigo -eq "200") { Bien "modelos cargados ($seg s). La mediana por documento es 19,8 s." }
     else { Aviso "el calentamiento devolvio HTTP $codigo tras $seg s; mira la ventana de uvicorn" }
 }
 

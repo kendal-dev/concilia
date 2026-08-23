@@ -16,8 +16,8 @@
       "total_amount": "correcto"
     },
     "reintentos": 0,
-    "latencia_s": 51.62,
-    "ocr_s": 8.99,
+    "latencia_s": 48.92,
+    "ocr_s": 8.82,
     "bloques_ocr": 27,
     "conf_ocr": 0.738,
     "verificados": {
@@ -27,7 +27,7 @@
         "similitud": 1.0
       },
       "total_amount": {
-        "valor": "639,73",
+        "valor": "639.73",
         "aparece_en_ocr": true,
         "similitud": 1.0
       }
@@ -83,7 +83,89 @@
         {
           "phase": "extraction",
           "summary": "Documento leido en 1 intento(s).",
-          "input": null,
+          "input": {
+            "texto_ocr": "Shot\non\nFreeYond\n9d\nCamera\nLL\nOu|\nR\nPinturas Monopol Ltda\nFactura No.\n03784\nNombre\n94\nSILVER FUENTES NUñEZ\nMIT/CI\nLI\n5900398\nFecha\n11/02/2026\nTotal Bs\n639.73\n0\nVisukalice su factura escaneanidci €\nLuaiquer cluda curnuriqiuese & HUU-lU-1 AUU\ncádiga QR\nP4013283.C2\nJ70  e",
+            "valores_verificados": {
+              "invoice_number": {
+                "valor": "03784",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              },
+              "total_amount": {
+                "valor": "639.73",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              }
+            },
+            "ocr": {
+              "engine": "qvac-ggml-ocr/easyocr",
+              "route": "ocr",
+              "duration_s": 8.82,
+              "quality_flags": [
+                "rotada_90"
+              ],
+              "bloques": 27,
+              "confianza_media_ocr": 0.738,
+              "error": null,
+              "rotacion_aplicada": 90,
+              "rotaciones_probadas": [
+                {
+                  "angulo": 0,
+                  "confianza": 0.655,
+                  "caracteres": 180,
+                  "puntaje": 77.2
+                },
+                {
+                  "angulo": 90,
+                  "confianza": 0.738,
+                  "caracteres": 269,
+                  "puntaje": 146.5
+                },
+                {
+                  "angulo": 180,
+                  "confianza": 0.697,
+                  "caracteres": 187,
+                  "puntaje": 90.8
+                },
+                {
+                  "angulo": 270,
+                  "confianza": 0.404,
+                  "caracteres": 261,
+                  "puntaje": 42.6
+                }
+              ]
+            },
+            "rotacion": {
+              "aplicada": 90,
+              "probadas": [
+                {
+                  "angulo": 0,
+                  "confianza": 0.655,
+                  "caracteres": 180,
+                  "puntaje": 77.2
+                },
+                {
+                  "angulo": 90,
+                  "confianza": 0.738,
+                  "caracteres": 269,
+                  "puntaje": 146.5
+                },
+                {
+                  "angulo": 180,
+                  "confianza": 0.697,
+                  "caracteres": 187,
+                  "puntaje": 90.8
+                },
+                {
+                  "angulo": 270,
+                  "confianza": 0.404,
+                  "caracteres": 261,
+                  "puntaje": 42.6
+                }
+              ]
+            },
+            "motivo": null
+          },
           "output": {
             "supplier_tax_id": null,
             "supplier_name": "Pinturas Monopol Ltda",
@@ -99,7 +181,7 @@
               "total_amount": 0.95
             }
           },
-          "duration_ms": 51609,
+          "duration_ms": 48911,
           "retries": 0,
           "error": null
         },
@@ -134,15 +216,15 @@
           "summary": "Dictamen UNCERTAIN registrado; queda a revisar.",
           "input": null,
           "output": null,
-          "duration_ms": 7,
+          "duration_ms": 9,
           "retries": 0,
           "error": null
         }
       ],
-      "started_at": "2026-08-23T02:16:11.484209"
+      "started_at": "2026-08-23T06:32:51.850771"
     },
-    "invoice_id": 74,
-    "reconciliation_id": 74,
+    "invoice_id": 32,
+    "reconciliation_id": 32,
     "human_decision": "PENDING"
   }
 }

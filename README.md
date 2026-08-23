@@ -26,19 +26,19 @@ caso natural para IA local.
 
 | Que | Donde |
 |---|---|
-| Carga del par OCR (detector + reconocedor) | [`ocr/engine.py:192`](https://github.com/kendal-dev/concilia/blob/95c39eea8e13ea252e5c88a59168087c9c1ddab2/ocr/engine.py#L192-L195) |
-| Inferencia OCR sobre la imagen | [`ocr/engine.py:301`](https://github.com/kendal-dev/concilia/blob/95c39eea8e13ea252e5c88a59168087c9c1ddab2/ocr/engine.py#L301-L307) |
-| Barrido de rotacion | [`ocr/engine.py:236`](https://github.com/kendal-dev/concilia/blob/95c39eea8e13ea252e5c88a59168087c9c1ddab2/ocr/engine.py#L236-L248) |
-| Cliente QVAC: interfaz del orquestador | [`backend/core/llm/qvac.py:234`](https://github.com/kendal-dev/concilia/blob/95c39eea8e13ea252e5c88a59168087c9c1ddab2/backend/core/llm/qvac.py#L234-L239) |
-| Pipeline de dos etapas (OCR -> texto -> JSON) | [`backend/core/llm/qvac.py:239`](https://github.com/kendal-dev/concilia/blob/95c39eea8e13ea252e5c88a59168087c9c1ddab2/backend/core/llm/qvac.py#L239-L253) |
-| Carga del modelo de texto | [`backend/core/llm/qvac.py:166`](https://github.com/kendal-dev/concilia/blob/95c39eea8e13ea252e5c88a59168087c9c1ddab2/backend/core/llm/qvac.py#L166-L170) |
-| Generacion (llamacpp-completion) | [`backend/core/llm/qvac.py:177`](https://github.com/kendal-dev/concilia/blob/95c39eea8e13ea252e5c88a59168087c9c1ddab2/backend/core/llm/qvac.py#L177-L185) |
-| Seleccion del motor real | [`backend/core/llm/factory.py:41`](https://github.com/kendal-dev/concilia/blob/95c39eea8e13ea252e5c88a59168087c9c1ddab2/backend/core/llm/factory.py#L41-L47) |
-| Verificacion de valores contra el texto OCR | [`confidence/detectors.py:71`](https://github.com/kendal-dev/concilia/blob/95c39eea8e13ea252e5c88a59168087c9c1ddab2/confidence/detectors.py#L71-L81) |
-| La evidencia del OCR entra a la traza auditable | [`backend/core/orchestrator.py:80`](https://github.com/kendal-dev/concilia/blob/95c39eea8e13ea252e5c88a59168087c9c1ddab2/backend/core/orchestrator.py#L80-L85) |
-| Descarga de modelos desde el registry | [`scripts/setup_models.py:53`](https://github.com/kendal-dev/concilia/blob/95c39eea8e13ea252e5c88a59168087c9c1ddab2/scripts/setup_models.py#L53-L61) |
+| Carga del par OCR (detector + reconocedor) | [`ocr/engine.py:192`](https://github.com/kendal-dev/concilia/blob/8476d182aad77d4547f53916717b9d19658a2a9b/ocr/engine.py#L192-L195) |
+| Inferencia OCR sobre la imagen | [`ocr/engine.py:301`](https://github.com/kendal-dev/concilia/blob/8476d182aad77d4547f53916717b9d19658a2a9b/ocr/engine.py#L301-L307) |
+| Barrido de rotacion | [`ocr/engine.py:236`](https://github.com/kendal-dev/concilia/blob/8476d182aad77d4547f53916717b9d19658a2a9b/ocr/engine.py#L236-L248) |
+| Cliente QVAC: interfaz del orquestador | [`backend/core/llm/qvac.py:234`](https://github.com/kendal-dev/concilia/blob/8476d182aad77d4547f53916717b9d19658a2a9b/backend/core/llm/qvac.py#L234-L239) |
+| Pipeline de dos etapas (OCR -> texto -> JSON) | [`backend/core/llm/qvac.py:239`](https://github.com/kendal-dev/concilia/blob/8476d182aad77d4547f53916717b9d19658a2a9b/backend/core/llm/qvac.py#L239-L253) |
+| Carga del modelo de texto | [`backend/core/llm/qvac.py:166`](https://github.com/kendal-dev/concilia/blob/8476d182aad77d4547f53916717b9d19658a2a9b/backend/core/llm/qvac.py#L166-L170) |
+| Generacion (llamacpp-completion) | [`backend/core/llm/qvac.py:177`](https://github.com/kendal-dev/concilia/blob/8476d182aad77d4547f53916717b9d19658a2a9b/backend/core/llm/qvac.py#L177-L185) |
+| Seleccion del motor real | [`backend/core/llm/factory.py:41`](https://github.com/kendal-dev/concilia/blob/8476d182aad77d4547f53916717b9d19658a2a9b/backend/core/llm/factory.py#L41-L47) |
+| Verificacion de valores contra el texto OCR | [`confidence/detectors.py:104`](https://github.com/kendal-dev/concilia/blob/8476d182aad77d4547f53916717b9d19658a2a9b/confidence/detectors.py#L104-L114) |
+| La evidencia del OCR entra a la traza auditable | [`backend/core/orchestrator.py:80`](https://github.com/kendal-dev/concilia/blob/8476d182aad77d4547f53916717b9d19658a2a9b/backend/core/orchestrator.py#L80-L85) |
+| Descarga de modelos desde el registry | [`scripts/setup_models.py:53`](https://github.com/kendal-dev/concilia/blob/8476d182aad77d4547f53916717b9d19658a2a9b/scripts/setup_models.py#L53-L61) |
 
-_Enlaces fijados al commit `95c39eea8e`._
+_Enlaces fijados al commit `8476d182aa`._
 
 <!-- /PERMALINKS -->
 
@@ -81,9 +81,9 @@ CRNN gen-2, docTR usa DBNet + su propio reconocedor).
 |---|---|
 | Arranque (carga de los tres modelos, en frío) | ~36 s |
 | Arranque (modelos en caché del sistema) | ~21 s |
-| OCR por documento (mediana) | **10,0 s** |
-| Documento completo (mediana) | **19,6 s** |
-| Documento completo (P95) | 51,3 s |
+| OCR por documento (mediana) | **9,8 s** |
+| Documento completo (mediana) | **19,8 s** |
+| Documento completo (P95) | 49,5 s |
 
 El P95 alto es el precio de la escalada por rotación: cuando la primera lectura no da
 ni identificador ni total, el sistema prueba cuatro orientaciones y vuelve a extraer.
@@ -207,6 +207,11 @@ Corrida completa sobre los 31 documentos, con `python eval/runner.py`. Tabla ent
 | Total del documento leído correctamente | 26 / 31 |
 | Identificador tributario leído correctamente | 19 / 31 |
 | Reintentos de extracción necesarios | 0 |
+
+**Corrida dos veces, mismo resultado.** Las dos corridas completas dan 24/31, y los
+siete fallos son los mismos siete documentos. La extracción va a `temp 0.0` y toda la
+aritmética la hace Python, así que el pipeline es determinista de punta a punta. No es
+un número que salió bien una vez.
 
 **El veredicto esperado no está escrito a mano.** Para cada documento se consulta el
 ERP con el mismo `lookup_purchase_order` que usa el agente, partiendo del ground truth
@@ -372,9 +377,11 @@ Linux y macOS van los pasos 6 y 7, que hacen lo mismo en dos terminales. La úni
 que no hay que saltarse es el precalentamiento: mandá un `POST /reconcile` con cualquier
 documento antes de abrir la UI.
 
-El precalentamiento importa: la primera petición carga detector, reconocedor y modelo de
-texto —**~78 s medidos**— y sin él ese costo cae sobre la primera factura que suba el
-usuario, que parece un cuelgue. Después de calentar, cada documento tarda ~15 s.
+El precalentamiento importa: la primera petición carga detector, reconocedor y modelo
+de texto. Medido en este equipo, esa primera petición tarda **~50 s** —los tres modelos
+más el documento de calentamiento— y sin el script ese costo cae sobre la primera
+factura que sube el usuario, que parece un cuelgue. Después de calentar, la mediana es
+de 19,8 s por documento.
 
 Los pasos 6 y 7 son el equivalente manual, por si preferís las terminales separadas.
 

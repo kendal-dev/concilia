@@ -16,8 +16,8 @@
       "total_amount": "correcto"
     },
     "reintentos": 0,
-    "latencia_s": 16.19,
-    "ocr_s": 7.54,
+    "latencia_s": 16.98,
+    "ocr_s": 7.36,
     "bloques_ocr": 65,
     "conf_ocr": 0.662,
     "verificados": {
@@ -32,12 +32,12 @@
         "similitud": 1.0
       },
       "total_amount": {
-        "valor": "33,9",
+        "valor": "33.90",
         "aparece_en_ocr": true,
         "similitud": 1.0
       },
       "subtotal": {
-        "valor": "33,92",
+        "valor": "33.92",
         "aparece_en_ocr": true,
         "similitud": 1.0
       }
@@ -50,7 +50,7 @@
       "total_vs_po": "PASS",
       "po_status": "PASS"
     },
-    "nota": "La factura de JOHÚR SDn BhD muestra una suma de líneas inconsistentes (725.14 RM) frente al total autorizado en la OC-200 (33.90 MYR), aunque el monto total coincide. Dado que ninguna línea de la factura coincide con los ítems autorizados en la orden de compra OC-200, el operador debe solicitar al proveedor la documentación detallada de las líneas de la factura para justificar el cobro antes de proceder con el pago."
+    "nota": "Operador, el sistema detecta una inconsistencia crítica: la suma de las líneas de la factura (725.14 RM) no coincide con el total declarado (33.9 RM) ni con el monto autorizado en la orden de compra OC-200. A pesar de que el total coincide con la orden, ninguna línea de la factura tiene relación con los ítems autorizados en dicha orden. Por favor, investiga inmediatamente si se emitió una factura incorrecta o si hay un error en la configuración del sistema antes de aprobar el pago."
   },
   "texto_ocr": "tan woon yann\nMR\n0 .1 .Y\nJOHÚR ) SDn BhD\n(Co.REG\n933109-X )\nLot\n1851-A\n185;-B\nJALAN KPB\nKawASAN PeRinduStRIAN BALAKoNG\n43300 SERI KEMBANGAN , SELANGOR\nMR diY TESCO\nTERBAU )\nInVOICE-\nCHOPPInG Board 35.5x25.sCM 8o3M#\nEZtohdo5\n24\n8970669\nX 19.00\n19.00\nAIR PRESSUPE SPRAYER SX-575-1\n1 .5L\nHCo3-7\n15\n9066468\n8 .02\n8.02\nHaxco\nWindshiled CLeanER 12oML\nHa14-3a\n48\n9557031100236\n3 .02\n3 .02\nBOPP TAPE\n48MM*1ooM CLEAR\nFZ-04\n36\n69358 18350846\n1 X\n3.88\n3,88\nItem(s\nOty(s)\nTOTAL\nRM 33 ,92\nRounding ADJUSTMEY\n~RM 0.02\nTOTAL RoundED\n3}-f0\nRH 33,90\nCASH\nRH 50.00\nChANGE\nRM\n16 . 10\n12-01-19 21:13 Sho1 ZKo9\nT4 R0ooo27830\nOPERATOR TRAInee CASHIER\nEXCHANGE\nARE ALLOHED Within\nDaYs WITH RECEIPT\nSTRICTLY\nNo Cash REFUND",
   "contrato": {
@@ -106,7 +106,7 @@
         "actual": "OPEN"
       }
     ],
-    "note": "La factura de JOHÚR SDn BhD muestra una suma de líneas inconsistentes (725.14 RM) frente al total autorizado en la OC-200 (33.90 MYR), aunque el monto total coincide. Dado que ninguna línea de la factura coincide con los ítems autorizados en la orden de compra OC-200, el operador debe solicitar al proveedor la documentación detallada de las líneas de la factura para justificar el cobro antes de proceder con el pago.",
+    "note": "Operador, el sistema detecta una inconsistencia crítica: la suma de las líneas de la factura (725.14 RM) no coincide con el total declarado (33.9 RM) ni con el monto autorizado en la orden de compra OC-200. A pesar de que el total coincide con la orden, ninguna línea de la factura tiene relación con los ítems autorizados en dicha orden. Por favor, investiga inmediatamente si se emitió una factura incorrecta o si hay un error en la configuración del sistema antes de aprobar el pago.",
     "invoice": {
       "supplier_tax_id": "933109-X",
       "supplier_name": "JOHÚR SDn BhD",
@@ -171,7 +171,42 @@
         {
           "phase": "extraction",
           "summary": "Documento leido en 1 intento(s).",
-          "input": null,
+          "input": {
+            "texto_ocr": "tan woon yann\nMR\n0 .1 .Y\nJOHÚR ) SDn BhD\n(Co.REG\n933109-X )\nLot\n1851-A\n185;-B\nJALAN KPB\nKawASAN PeRinduStRIAN BALAKoNG\n43300 SERI KEMBANGAN , SELANGOR\nMR diY TESCO\nTERBAU )\nInVOICE-\nCHOPPInG Board 35.5x25.sCM 8o3M#\nEZtohdo5\n24\n8970669\nX 19.00\n19.00\nAIR PRESSUPE SPRAYER SX-575-1\n1 .5L\nHCo3-7\n15\n9066468\n8 .02\n8.02\nHaxco\nWindshiled CLeanER 12oML\nHa14-3a\n48\n9557031100236\n3 .02\n3 .02\nBOPP TAPE\n48MM*1ooM CLEAR\nFZ-04\n36\n69358 18350846\n1 X\n3.88\n3,88\nItem(s\nOty(s)\nTOTAL\nRM 33 ,92\nRounding ADJUSTMEY\n~RM 0.02\nTOTAL RoundED\n3}-f0\nRH 33,90\nCASH\nRH 50.00\nChANGE\nRM\n16 . 10\n12-01-19 21:13 Sho1 ZKo9\nT4 R0ooo27830\nOPERATOR TRAInee CASHIER\nEXCHANGE\nARE ALLOHED Within\nDaYs WITH RECEIPT\nSTRICTLY\nNo Cash REFUND",
+            "valores_verificados": {
+              "supplier_tax_id": {
+                "valor": "933109-X",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              },
+              "invoice_number": {
+                "valor": "8970669",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              },
+              "total_amount": {
+                "valor": "33.90",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              },
+              "subtotal": {
+                "valor": "33.92",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              }
+            },
+            "ocr": {
+              "engine": "qvac-ggml-ocr/easyocr",
+              "route": "ocr",
+              "duration_s": 7.36,
+              "quality_flags": [],
+              "bloques": 65,
+              "confianza_media_ocr": 0.662,
+              "error": null
+            },
+            "rotacion": null,
+            "motivo": null
+          },
           "output": {
             "supplier_tax_id": "933109-X",
             "supplier_name": "JOHÚR SDn BhD",
@@ -212,7 +247,7 @@
               "total_amount": 0.95
             }
           },
-          "duration_ms": 14139,
+          "duration_ms": 14687,
           "retries": 0,
           "error": null
         },
@@ -240,7 +275,7 @@
               }
             ]
           },
-          "duration_ms": 5,
+          "duration_ms": 6,
           "retries": 0,
           "error": null
         },
@@ -298,7 +333,7 @@
               "actual": "OPEN"
             }
           ],
-          "duration_ms": 2,
+          "duration_ms": 1,
           "retries": 0,
           "error": null
         },
@@ -306,8 +341,8 @@
           "phase": "reasoning",
           "summary": "Nota de auditoria redactada.",
           "input": "=== DATOS EXTRAIDOS DE LA FACTURA FISICA ===\nProveedor: JOHÚR SDn BhD\nNIT: 933109-X\nNumero de factura: 8970669\nFecha: 12-01-19\nTotal cobrado: 33.9 RM\nLineas facturadas:\n- CHOPPInG Board 35.5x25.sCM 8o3M#: 24 x 19 = 456\n- AIR PRESSUPE SPRAYER SX-575-1: 15 x 8.02 = 120.3\n- Haxco Windshiled CLeanER 12oML: 48 x 3.02 = 144.96\n- BOPP TAPE 48MM*1ooM CLEAR: 1 x 3.88 = 3.88\n\n=== REGISTRO OFICIAL RECUPERADO DEL ERP ===\nOrden de compra: OC-200\nProveedor: MR D.I.Y. (JOHOR) SDN BHD\nEstado de la orden: OPEN\nTotal autorizado: 33.90 MYR\nLineas autorizadas:\n- Compra segun comprobante R002: 1 x 33.9 = 33.9\n\n=== DIFERENCIA (calculada por el sistema, no la recalcules) ===\nLos montos coinciden exactamente.\n\n=== VERIFICACIONES YA EJECUTADAS POR EL SISTEMA ===\n[FALLA] suma de lineas: Las lineas suman 725.14 pero el total declarado es 33.9.\n[ATENCION] cantidad vs OC: Ninguna linea de la factura coincide con la orden de compra.\n[ATENCION] precio unit. vs OC: Ninguna linea de la factura coincide con la orden de compra.\n[OK] total vs OC: El total facturado coincide con la orden OC-200.\n[OK] estado de la OC: La orden OC-200 esta vigente (OPEN).\n\nEscribi la nota interna para el operador.",
-          "output": "La factura de JOHÚR SDn BhD muestra una suma de líneas inconsistentes (725.14 RM) frente al total autorizado en la OC-200 (33.90 MYR), aunque el monto total coincide. Dado que ninguna línea de la factura coincide con los ítems autorizados en la orden de compra OC-200, el operador debe solicitar al proveedor la documentación detallada de las líneas de la factura para justificar el cobro antes de proceder con el pago.",
-          "duration_ms": 2025,
+          "output": "Operador, el sistema detecta una inconsistencia crítica: la suma de las líneas de la factura (725.14 RM) no coincide con el total declarado (33.9 RM) ni con el monto autorizado en la orden de compra OC-200. A pesar de que el total coincide con la orden, ninguna línea de la factura tiene relación con los ítems autorizados en dicha orden. Por favor, investiga inmediatamente si se emitió una factura incorrecta o si hay un error en la configuración del sistema antes de aprobar el pago.",
+          "duration_ms": 2245,
           "retries": 0,
           "error": null
         },
@@ -316,15 +351,15 @@
           "summary": "Dictamen MATCH registrado; queda a revisar.",
           "input": null,
           "output": null,
-          "duration_ms": 7,
+          "duration_ms": 13,
           "retries": 0,
           "error": null
         }
       ],
-      "started_at": "2026-08-23T02:07:01.210279"
+      "started_at": "2026-08-23T06:24:05.645096"
     },
-    "invoice_id": 48,
-    "reconciliation_id": 48,
+    "invoice_id": 6,
+    "reconciliation_id": 6,
     "human_decision": "PENDING"
   }
 }

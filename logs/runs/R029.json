@@ -16,8 +16,8 @@
       "total_amount": "correcto"
     },
     "reintentos": 0,
-    "latencia_s": 50.56,
-    "ocr_s": 9.17,
+    "latencia_s": 51.9,
+    "ocr_s": 9.64,
     "bloques_ocr": 20,
     "conf_ocr": 0.692,
     "verificados": {
@@ -32,9 +32,9 @@
         "similitud": 1.0
       },
       "total_amount": {
-        "valor": "1630,2",
-        "aparece_en_ocr": false,
-        "similitud": 0.667
+        "valor": "1,630.20",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
       }
     },
     "checks": {
@@ -45,7 +45,7 @@
       "total_vs_po": "FAIL",
       "po_status": "PASS"
     },
-    "nota": "La factura de Pinturas Monopol Ltda (NIT 5900398) cobra 270.00 Bs más que el monto autorizado en la orden OC-220 vigente. El operador debe rechazar el pago inmediatamente y solicitar al proveedor la justificación del excedente antes de autorizar cualquier movimiento."
+    "nota": "Se detectó una sobrecarga de 270.00 Bs en la factura 13065 de Pinturas Monopol Ltda, ya que supera el monto autorizado en la orden de compra OC-220. Por favor, bloquee el pago inmediato y solicite al proveedor la justificación del excedente antes de cualquier liberación."
   },
   "texto_ocr": "Shot\non\nFree Yond\nP6\n0\nCamera\nPinturas Monopol Ltda\nFactura #o.\n13065\nNombre\nSILVER FUENTES NUñEZ\nNIT/CI\n5900398\nFecha\n22/05/2026\nTotal Bs\n1,630.20\nVistialice su factuwa escaneanco € cádigo QR\nLuquer duda cumuriiquese & tIUU- IU-1quu\nP4074135.C2",
   "contrato": {
@@ -101,7 +101,7 @@
         "actual": "OPEN"
       }
     ],
-    "note": "La factura de Pinturas Monopol Ltda (NIT 5900398) cobra 270.00 Bs más que el monto autorizado en la orden OC-220 vigente. El operador debe rechazar el pago inmediatamente y solicitar al proveedor la justificación del excedente antes de autorizar cualquier movimiento.",
+    "note": "Se detectó una sobrecarga de 270.00 Bs en la factura 13065 de Pinturas Monopol Ltda, ya que supera el monto autorizado en la orden de compra OC-220. Por favor, bloquee el pago inmediato y solicite al proveedor la justificación del excedente antes de cualquier liberación.",
     "invoice": {
       "supplier_tax_id": "5900398",
       "supplier_name": "Pinturas Monopol Ltda",
@@ -141,7 +141,94 @@
         {
           "phase": "extraction",
           "summary": "Documento leido en 1 intento(s).",
-          "input": null,
+          "input": {
+            "texto_ocr": "Shot\non\nFree Yond\nP6\n0\nCamera\nPinturas Monopol Ltda\nFactura #o.\n13065\nNombre\nSILVER FUENTES NUñEZ\nNIT/CI\n5900398\nFecha\n22/05/2026\nTotal Bs\n1,630.20\nVistialice su factuwa escaneanco € cádigo QR\nLuquer duda cumuriiquese & tIUU- IU-1quu\nP4074135.C2",
+            "valores_verificados": {
+              "supplier_tax_id": {
+                "valor": "5900398",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              },
+              "invoice_number": {
+                "valor": "13065",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              },
+              "total_amount": {
+                "valor": "1,630.20",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              }
+            },
+            "ocr": {
+              "engine": "qvac-ggml-ocr/easyocr",
+              "route": "ocr",
+              "duration_s": 9.64,
+              "quality_flags": [
+                "rotada_90"
+              ],
+              "bloques": 20,
+              "confianza_media_ocr": 0.692,
+              "error": null,
+              "rotacion_aplicada": 90,
+              "rotaciones_probadas": [
+                {
+                  "angulo": 0,
+                  "confianza": 0.65,
+                  "caracteres": 191,
+                  "puntaje": 80.7
+                },
+                {
+                  "angulo": 90,
+                  "confianza": 0.692,
+                  "caracteres": 245,
+                  "puntaje": 117.3
+                },
+                {
+                  "angulo": 180,
+                  "confianza": 0.626,
+                  "caracteres": 175,
+                  "puntaje": 68.6
+                },
+                {
+                  "angulo": 270,
+                  "confianza": 0.31,
+                  "caracteres": 237,
+                  "puntaje": 22.8
+                }
+              ]
+            },
+            "rotacion": {
+              "aplicada": 90,
+              "probadas": [
+                {
+                  "angulo": 0,
+                  "confianza": 0.65,
+                  "caracteres": 191,
+                  "puntaje": 80.7
+                },
+                {
+                  "angulo": 90,
+                  "confianza": 0.692,
+                  "caracteres": 245,
+                  "puntaje": 117.3
+                },
+                {
+                  "angulo": 180,
+                  "confianza": 0.626,
+                  "caracteres": 175,
+                  "puntaje": 68.6
+                },
+                {
+                  "angulo": 270,
+                  "confianza": 0.31,
+                  "caracteres": 237,
+                  "puntaje": 22.8
+                }
+              ]
+            },
+            "motivo": null
+          },
           "output": {
             "supplier_tax_id": "5900398",
             "supplier_name": "Pinturas Monopol Ltda",
@@ -157,7 +244,7 @@
               "total_amount": 0.9
             }
           },
-          "duration_ms": 49257,
+          "duration_ms": 50457,
           "retries": 0,
           "error": null
         },
@@ -251,8 +338,8 @@
           "phase": "reasoning",
           "summary": "Nota de auditoria redactada.",
           "input": "=== DATOS EXTRAIDOS DE LA FACTURA FISICA ===\nProveedor: Pinturas Monopol Ltda\nNIT: 5900398\nNumero de factura: 13065\nFecha: 22/05/2026\nTotal cobrado: 1630.2 Bs\n\n=== REGISTRO OFICIAL RECUPERADO DEL ERP ===\nOrden de compra: OC-220\nProveedor: Pinturas Monopol Ltda.\nEstado de la orden: OPEN\nTotal autorizado: 1360.20 BOB\nLineas autorizadas:\n- Compra segun comprobante R029: 1 x 1360.2 = 1360.2\n\n=== DIFERENCIA (calculada por el sistema, no la recalcules) ===\nLa factura cobra 270.00 MAS de lo autorizado.\n\n=== VERIFICACIONES YA EJECUTADAS POR EL SISTEMA ===\n[FALLA] total vs OC: La factura cobra 270.00 mas que la orden OC-220 (1360.20 autorizados).\n[OK] estado de la OC: La orden OC-220 esta vigente (OPEN).\n\nEscribi la nota interna para el operador.",
-          "output": "La factura de Pinturas Monopol Ltda (NIT 5900398) cobra 270.00 Bs más que el monto autorizado en la orden OC-220 vigente. El operador debe rechazar el pago inmediatamente y solicitar al proveedor la justificación del excedente antes de autorizar cualquier movimiento.",
-          "duration_ms": 1278,
+          "output": "Se detectó una sobrecarga de 270.00 Bs en la factura 13065 de Pinturas Monopol Ltda, ya que supera el monto autorizado en la orden de compra OC-220. Por favor, bloquee el pago inmediato y solicite al proveedor la justificación del excedente antes de cualquier liberación.",
+          "duration_ms": 1417,
           "retries": 0,
           "error": null
         },
@@ -261,15 +348,15 @@
           "summary": "Dictamen MISMATCH registrado; queda a revisar.",
           "input": null,
           "output": null,
-          "duration_ms": 6,
+          "duration_ms": 11,
           "retries": 0,
           "error": null
         }
       ],
-      "started_at": "2026-08-23T02:17:03.113040"
+      "started_at": "2026-08-23T06:33:40.782832"
     },
-    "invoice_id": 75,
-    "reconciliation_id": 75,
+    "invoice_id": 33,
+    "reconciliation_id": 33,
     "human_decision": "PENDING"
   }
 }

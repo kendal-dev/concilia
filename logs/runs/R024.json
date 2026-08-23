@@ -16,8 +16,8 @@
       "total_amount": "correcto"
     },
     "reintentos": 0,
-    "latencia_s": 26.28,
-    "ocr_s": 16.89,
+    "latencia_s": 21.74,
+    "ocr_s": 13.43,
     "bloques_ocr": 107,
     "conf_ocr": 0.79,
     "verificados": {
@@ -32,17 +32,17 @@
         "similitud": 1.0
       },
       "total_amount": {
-        "valor": "153,35",
+        "valor": "153.35",
         "aparece_en_ocr": true,
         "similitud": 1.0
       },
       "subtotal": {
-        "valor": "144,68",
+        "valor": "144.68",
         "aparece_en_ocr": true,
         "similitud": 1.0
       },
       "tax_amount": {
-        "valor": "8,68",
+        "valor": "8.68",
         "aparece_en_ocr": true,
         "similitud": 1.0
       }
@@ -135,7 +135,47 @@
         {
           "phase": "extraction",
           "summary": "Documento leido en 1 intento(s).",
-          "input": null,
+          "input": {
+            "texto_ocr": "TED] HENG STATIENERY B BDDKS\nJALAN\n(001451637-M}\nNo\n53\n#ESAR, 45600\nBAIANG BERJUNTAI\nSELANGOR DARUL EHSAN\nTEL ; 03\n-3271\n9872\nFAX\n08-3271\nGST Ne.\n9481\n000689913856\n[SIMPLIFID IAN INVOICE\nCASH\nReceipst No\nCS1802/27714\nDatz\n12/02/2018\nITEM\nQTY\nU/P\nDISC'%\nAMOUNT\n(RM)\n9555067700208\n10\n10.57\n0.00\n105.66 *\nIK YELLOW 7OGRAMS\n9557583450025\n17.45\n0 OO\n17.45\nPAPYRUS DARK COLOUR PAPER\n4974052801334\n2.70\n0.00\n2.70*\nARTLINE 70\n9557546953990\n0.85\n0.00\n0.85\nFASTER CXSN BALL PEN\n6924238702311\n2\n0,85\n0.00\n1.70 *\nCBE HANDYCUTTER\n9556655112694\n8.40\n0.00\n8.40 +\nCBE A4 SIZE 20 POCKETS REFILLABLE NEW\nCLEAR HOLDER\n9557369305006\n3.96\n0.00\n7,92 +\nEAGLE F4 120 NUMBERING FOOLSCAP\nBOOK\n'Total Qty.\n18\n144.68\nSUB-IOTAL\nAITn883;\n144.68\nTOTAL TAX\n8,68\nRoUNDING\n7 ?\nFEB\n0.01\nTOTAL\n{20iu\nCASH\n1153.35\nCHANGE\n0.00\nGSI SUMMARY\nTAXCODE\n\"\nAMOUNI\nTAX\n(RM)\n(RM\nSR\n6.00\n144.68\n8,68\nTOIAL :\n144.68\n8.68\nNote\nIndicated The\nItem\nSold Has Been Related\nTo GST (Goous & Services\nTax)\nGOoDS SOLD ARE NOT RETURNABLE\nTHANK YOU.",
+            "valores_verificados": {
+              "supplier_tax_id": {
+                "valor": "9481000689913856",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              },
+              "invoice_number": {
+                "valor": "CS1802/27714",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              },
+              "total_amount": {
+                "valor": "153.35",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              },
+              "subtotal": {
+                "valor": "144.68",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              },
+              "tax_amount": {
+                "valor": "8.68",
+                "aparece_en_ocr": true,
+                "similitud": 1.0
+              }
+            },
+            "ocr": {
+              "engine": "qvac-ggml-ocr/easyocr",
+              "route": "ocr",
+              "duration_s": 13.43,
+              "quality_flags": [],
+              "bloques": 107,
+              "confianza_media_ocr": 0.79,
+              "error": null
+            },
+            "rotacion": null,
+            "motivo": null
+          },
           "output": {
             "supplier_tax_id": "9481000689913856",
             "supplier_name": "TED] HENG STATIENERY B BDDKS",
@@ -188,7 +228,7 @@
               "total_amount": 0.95
             }
           },
-          "duration_ms": 26259,
+          "duration_ms": 21718,
           "retries": 0,
           "error": null
         },
@@ -199,7 +239,7 @@
             "supplier_tax_id": "9481000689913856"
           },
           "output": null,
-          "duration_ms": 9,
+          "duration_ms": 3,
           "retries": 0,
           "error": null
         },
@@ -239,10 +279,10 @@
           "error": null
         }
       ],
-      "started_at": "2026-08-23T02:14:55.747532"
+      "started_at": "2026-08-23T06:31:43.565987"
     },
-    "invoice_id": 70,
-    "reconciliation_id": 70,
+    "invoice_id": 28,
+    "reconciliation_id": 28,
     "human_decision": "PENDING"
   }
 }
