@@ -223,7 +223,41 @@ formal, no el de los tickets de comercio.
 
 ---
 
-## 9. Lo que no se probo
+## 9. `temp 0.0` no es lo mismo que reproducible bit a bit
+
+Las dos corridas completas dan el mismo veredicto en los 31 documentos, y los siete
+fallos son los mismos siete. Pero eso **no** significa que la extraccion sea identica
+token por token, y conviene no vender lo que no es.
+
+`R012`, el mismo archivo, con el mismo `temp 0.0`:
+
+```
+corrida de evaluacion:  total 15.90   subtotal 15.90   tax 0.90
+subida desde la UI:     total 15.90   subtotal 15.90   tax 0.00
+```
+
+El veredicto (`NO_PO_FOUND`), el total, el subtotal y el estado de los seis checks son
+identicos. Lo unico que se movio es `tax_amount`.
+
+**Por que.** El motor es codicioso a temperatura cero, pero el estado del contexto no es
+el mismo en las dos corridas: en el runner ese documento va despues de `R011`, en la UI
+iba despues de `R028`. Diferencias minimas en los logits alcanzan para voltear un token.
+
+**Donde se movio, que es lo interesante.** El ticket de `R012` **no desglosa IVA**. El
+modelo no eligio mal entre dos lecturas: no habia nada que leer, y a falta de evidencia
+devolvio un numero distinto cada vez. La inestabilidad aparece exactamente donde el
+documento no trae el dato — que es la misma frontera que marca todo el resto de este
+documento, vista desde otro angulo.
+
+**Consecuencia practica.** Los campos que deciden el pago —identificador tributario y
+total— se leen igual, y la aritmetica la hace Python. Los campos opcionales que el
+documento no imprime no son confiables, y por eso `check_tax` queda en `SKIPPED` cuando
+no hay subtotal e impuesto declarados por separado, en vez de dar por buena una lectura
+que puede cambiar en la proxima corrida.
+
+---
+
+## 10. Lo que no se probo
 
 - **Backend Vulkan.** Toda la corrida es en CPU. El addon soporta `vulkan` y la
   maquina tiene una RTX 4070, pero no se midio el efecto en latencia ni se verifico

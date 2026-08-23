@@ -209,9 +209,13 @@ Corrida completa sobre los 31 documentos, con `python eval/runner.py`. Tabla ent
 | Reintentos de extracción necesarios | 0 |
 
 **Corrida dos veces, mismo resultado.** Las dos corridas completas dan 24/31, y los
-siete fallos son los mismos siete documentos. La extracción va a `temp 0.0` y toda la
-aritmética la hace Python, así que el pipeline es determinista de punta a punta. No es
-un número que salió bien una vez.
+siete fallos son los mismos siete documentos. No es un número que salió bien una vez.
+
+Lo que reproduce es **el veredicto y los montos que lo determinan**. `temp 0.0` no hace
+la extracción reproducible bit a bit, y el proyecto no lo afirma: entre corridas cambian
+campos opcionales sueltos, y cambian justo donde el documento no los trae impresos. Está
+medido y explicado en
+[limitations.md](docs/limitations.md#9-temp-00-no-es-lo-mismo-que-reproducible-bit-a-bit).
 
 **El veredicto esperado no está escrito a mano.** Para cada documento se consulta el
 ERP con el mismo `lookup_purchase_order` que usa el agente, partiendo del ground truth
@@ -475,7 +479,7 @@ scripts/
   permalinks.py            Regenera la tabla de permalinks del README
   probe_extraccion.py      Prueba las dos etapas sobre una imagen, sin base de datos
 docs/
-  limitations.md           Los nueve límites conocidos, con casos reales
+  limitations.md           Los diez límites conocidos, con casos reales
   environment/             Preflight y sondas de introspección del SDK
 logs/runs/                 Un contrato por documento procesado
 ```
