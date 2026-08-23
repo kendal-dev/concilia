@@ -32,6 +32,7 @@ que no se mezclan:
 `latin_g2` cubre espanol; por eso easyocr es la ruta principal para recibos bolivianos.
 """
 import asyncio
+import base64
 import json
 import os
 import statistics
@@ -43,6 +44,7 @@ from dotenv import load_dotenv
 import tetherto.qvac_sdk as q
 from tetherto.qvac_sdk._generated.models._internal import (
     OcrStreamRequest,
+    OcrStreamRequestImageBase64,
     OcrStreamRequestImageFilePath,
     OcrStreamRequestOptions,
 )
@@ -151,11 +153,25 @@ class MotorOCR:
         salvo que haya algo real que mandar.
         """
         ruta = str(Path(ruta_imagen).resolve())
+        imagen = OcrStreamRequestImageFilePath(type="filePath", value=ruta)
+        return await self._ocr(imagen, paragraph)
+
+    async def leer_bytes(self, datos, paragraph=None):
+        """Igual que `leer`, pero desde bytes en memoria.
+
+        La API sube la factura como `UploadFile`; escribirla a disco solo para que
+        el OCR la lea seria un rodeo. El SDK acepta base64 y se encarga del temporal.
+        """
+        imagen = OcrStreamRequestImageBase64(
+            type="base64", value=base64.b64encode(datos).decode("ascii"))
+        return await self._ocr(imagen, paragraph)
+
+    async def _ocr(self, imagen, paragraph=None):
         t0 = time.time()
         campos = {
             "type": "ocrStream",
             "model_id": self.model_id,
-            "image": OcrStreamRequestImageFilePath(type="filePath", value=ruta),
+            "image": imagen,
         }
         if paragraph is not None:
             campos["options"] = OcrStreamRequestOptions(paragraph=paragraph)

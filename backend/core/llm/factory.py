@@ -38,8 +38,10 @@ def get_llm_client(filename: str = "", override: str | None = None) -> LLMClient
         # Util para demostrar el retry loop en vivo durante la demo.
         return FlakyLLMClient(fail_times=2, filename=filename)
     if kind == "qvac":
-        raise NotImplementedError(
-            "La integracion con QVAC llega en la Fase 4. "
-            "Usa LLM_CLIENT=stub o LLM_CLIENT=flaky por ahora."
-        )
+        # Import diferido a proposito: `qvac.py` arrastra el SDK de tetherto y el
+        # worker de bare. Importarlo arriba obligaria a tener el entorno de
+        # inferencia montado para correr los tests del backend, que no lo usan.
+        from backend.core.llm.qvac import QvacLLMClient
+
+        return QvacLLMClient(filename)
     raise ValueError(f"LLM_CLIENT desconocido: {kind!r}")
