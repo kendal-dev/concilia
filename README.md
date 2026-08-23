@@ -1,14 +1,15 @@
 # Agente de Reconciliación de Facturas — Local-First
 
-Agente de back-office que lee facturas, las cruza contra el ERP y emite un dictamen
-auditable. Toda la inferencia corre **en el dispositivo**: ningún dato de factura sale
-de la máquina.
+Agente de back-office que lee facturas fotografiadas, las cruza contra el ERP y emite
+un dictamen auditable. **Toda la inferencia corre en el dispositivo**: ningún dato de
+factura sale de la máquina, y no hay una sola llamada de red en el pipeline.
 
 Construido para el hackathon QVAC de Tether — ver [CONTEXT.md](CONTEXT.md).
 
-> **Estado: Fase 2 de 3.** Backend, base de datos y dashboard completos y verificados
-> end-to-end. La capa LLM corre detrás de una interfaz con implementaciones stub; la
-> integración real con QVAC llega en la Fase 3 y solo requiere escribir una clase.
+> **Estado: completo y medido.** Corrido sobre 31 documentos reales, con inferencia
+> QVAC de punta a punta: **24 veredictos correctos de 31**. Los números están en
+> [RESULTS.md](RESULTS.md) y los siete que fallan, explicados uno por uno, en
+> [docs/limitations.md](docs/limitations.md).
 
 ---
 
@@ -19,6 +20,61 @@ comparándolos a mano contra el ERP. Es alto volumen, alto valor, y toca datos q
 empresa no puede mandar a una API de terceros. Ese último punto es lo que lo hace el
 caso natural para IA local.
 
+## 🎯 Integración QVAC — permalinks
+
+<!-- PERMALINKS -->
+_Se generan con `python scripts/permalinks.py`._
+<!-- /PERMALINKS -->
+
+### Capacidades del SDK que se usan
+
+| Capacidad | Dónde | Para qué |
+|---|---|---|
+| **OCR** (`ggml-ocr`, pipeline easyocr) | `ocr/engine.py` | Etapa 1: foto → texto crudo |
+| **Generación de texto** (`llamacpp-completion`) | `backend/core/llm/qvac.py` | Etapa 2: texto → JSON; y la nota de auditoría |
+| **Registry de modelos** (`model_registry_search`, `download_asset`) | `scripts/setup_models.py` | Descarga de los pesos desde un clone limpio |
+
+### Modelos
+
+| Rol | Modelo | Cuantización | Tamaño |
+|---|---|---|---|
+| Detector de texto | `craft_mlt_25k` | — | 83 MB |
+| Reconocedor | `latin_g2` | — | 15 MB |
+| Extracción y redacción | `Qwen3.5-4B-Q4_K_M` | Q4_K_M | 2,74 GB |
+
+Los tres salen del registry de QVAC. `latin_g2` se eligió sobre el par docTR porque
+cubre español; el par de OCR **no se mezcla entre familias** (easyocr usa CRAFT +
+CRNN gen-2, docTR usa DBNet + su propio reconocedor).
+
+### Hardware y latencia
+
+<!-- HARDWARE -->
+| | |
+|---|---|
+| Máquina | ASUS ROG Zephyrus G16 (GU605MI) |
+| CPU | Intel Core Ultra 9 185H — 16 núcleos, 22 hilos |
+| RAM | 16 GB (Windows reporta 15 GB disponibles) |
+| GPU | NVIDIA RTX 4070 Laptop + Intel Arc integrada — **no usadas** |
+| SO | Windows 11 |
+| Python | 3.14.5 |
+| Runtime del SDK | Bare (Node 24.19) |
+| Backend de inferencia | **CPU**. El addon soporta `vulkan`, `metal` y `opencl`; no se midió |
+<!-- /HARDWARE -->
+
+| Métrica | Valor |
+|---|---|
+| Arranque (carga de los tres modelos, en frío) | ~36 s |
+| Arranque (modelos en caché del sistema) | ~21 s |
+| OCR por documento (mediana) | **10,0 s** |
+| Documento completo (mediana) | **19,6 s** |
+| Documento completo (P95) | 51,3 s |
+
+El P95 alto es el precio de la escalada por rotación: cuando la primera lectura no da
+ni identificador ni total, el sistema prueba cuatro orientaciones y vuelve a extraer.
+Un documento derecho tarda ~16 s; uno girado, ~51 s.
+
+---
+
 ## Cómo está resuelto
 
 El principio de diseño es que **Python está al mando y el LLM es una herramienta**, no
@@ -28,7 +84,8 @@ amnesia de contexto y fracasa.
 
 ```
 Fase 1  Ingesta        Operador sube la foto de la factura
-Fase 2  Extracción     LLM transcribe → JSON validado    [self-correction loop]
+Fase 2  Extracción     OCR local → texto crudo
+                       LLM local: texto → JSON validado   [self-correction loop]
         ── el modelo se detiene ──
 Fase 3  Herramienta    Python consulta MariaDB (el ERP)
 Fase 4  Verificación   Python corre 6 checks deterministas — sin tocar el modelo
@@ -40,36 +97,66 @@ Fase 6  Presentación   Dictamen + checks + traza completa auditable
 autorizado se calcula en código; al LLM solo se le pide prosa. Los modelos pequeños
 fallan en aritmética y no hay razón para delegársela.
 
+### Dos etapas de OCR, no un multimodal monolítico
+
+La extracción no le pasa la imagen a un modelo multimodal. Hace dos llamadas: OCR
+primero, modelo de texto después. El motivo no es de rendimiento sino de auditabilidad:
+**el texto crudo del OCR es el razonamiento visible**. Con un multimodal no hay nada
+intermedio que mostrarle a un humano, y no hay contra qué verificar si el modelo
+inventó un número.
+
+Ese texto queda guardado por documento en `logs/runs/<recibo>.json`, junto con la traza
+por fases.
+
+### Verificación de procedencia
+
+Cada valor que el modelo extrae se busca en el texto que produjo el OCR. Si el total
+dice `639,73` pero eso no aparece en ninguna parte del texto, el valor fue inventado.
+
+La comparación no es literal: el OCR escribe `RH 33,90` donde el modelo devuelve
+`33.9`, y marcarlo como inventado sería un falso positivo — peor que no tener detector,
+porque hunde la confianza de un dato correcto. Se comparan las variantes de escritura
+(coma decimal, cero final, espacios intercalados) sobre texto normalizado.
+
+**Lo que prueba y lo que no:** verifica *procedencia*, no *corrección*. Un número de
+factura leído de la línea de la dirección existe en el texto y aun así es el campo
+equivocado. Descarta la alucinación, no el error de interpretación. Hay un caso real de
+esto documentado en [limitations.md](docs/limitations.md#3).
+
+### Escalada por rotación
+
+Las fotos de factura vienen giradas y sin etiqueta EXIF de orientación, así que no hay
+forma de saberlo sin mirar el resultado. Si la primera lectura no dio ni identificador
+ni total — la firma de una imagen mal orientada — el sistema prueba 0/90/180/270 grados
+y se queda con la mejor lectura, medida por confianza del OCR y cantidad de texto.
+
+No corre de entrada porque cuesta una pasada de OCR por ángulo. El ángulo elegido y los
+descartados quedan en la evidencia de la corrida.
+
 ### Verificado por código
 
-El dashboard muestra una fila `verificado por código` separada de la nota que
-redactó el modelo. Todo lo que aparece ahí sale de
-[`backend/core/checks.py`](backend/core/checks.py), que **no toca el LLM en ningún
-momento**:
+El dashboard muestra una fila `verificado por código` separada de la nota que redactó el
+modelo. Todo lo que aparece ahí sale de [`backend/core/checks.py`](backend/core/checks.py),
+que **no toca el LLM en ningún momento**:
 
 | Check | Qué compara |
 |---|---|
-| `suma de líneas` | Que las líneas sumen el total declarado (coherencia interna del documento) |
+| `suma de líneas` | Que las líneas sumen el total declarado |
 | `impuestos` | Que subtotal + IVA dé el total, y que el IVA sea el 13% |
 | `cantidad vs OC` | Cantidad de cada línea contra la línea equivalente de la orden |
 | `precio unit. vs OC` | Precio unitario línea a línea |
 | `total vs OC` | El delta entre lo facturado y lo autorizado |
 | `estado de la OC` | Falla si la orden figura cancelada |
 
-`SKIPPED` es un estado de primera clase: si el modelo no logró leer las líneas, el
-check se declara no evaluable en vez de inventar un resultado. **Un `SKIPPED` nunca
+`SKIPPED` es un estado de primera clase: si el modelo no logró leer las líneas, el check
+se declara no evaluable en vez de inventar un resultado. **Un `SKIPPED` nunca
 auto-aprueba** — no verificar no es lo mismo que verificar con éxito.
-
-Las líneas se emparejan por descripción normalizada (sin acentos, espacios
-colapsados) con fallback a coincidencia aproximada, para que el ruido de OCR no
-cuente como discrepancia real.
 
 ### Política de auto-aprobación
 
-Vive en código, no en el modelo: se auto-aprueba solo si el veredicto es `MATCH`
-**y** ningún check quedó en `WARN`/`FAIL`. Una factura puede coincidir en el total
-y aun así quedar a revisar — por ejemplo, si cobra contra una orden cancelada, o si
-sus líneas no suman lo que declara.
+Vive en código, no en el modelo: se auto-aprueba solo si el veredicto es `MATCH` **y**
+ningún check quedó en `WARN`/`FAIL`. Una factura puede coincidir en el total y aun así
+quedar a revisar — por ejemplo, si cobra contra una orden cancelada.
 
 ### Los cuatro veredictos
 
@@ -77,11 +164,62 @@ sus líneas no suman lo que declara.
 |---|---|
 | `MATCH` | Los montos coinciden (tolerancia de 1 centavo) y la orden está vigente |
 | `MISMATCH` | Hay diferencia de monto, o se cobra contra una orden cancelada |
-| `NO_PO_FOUND` | No existe orden de compra para ese NIT — **no se llama al modelo**, porque pedirle una opinión sin datos es invitarlo a confabular |
+| `NO_PO_FOUND` | No existe orden de compra para ese identificador — **no se llama al modelo**, porque pedirle una opinión sin datos es invitarlo a confabular |
 | `UNCERTAIN` | El documento no se pudo leer de forma confiable. El agente dice "no sé" en vez de inventar un número |
 
-`UNCERTAIN` y `NO_PO_FOUND` son la parte que importa: un agente que marca incertidumbre
-vale más que uno que alucina un número con confianza.
+---
+
+## Resultados
+
+Corrida completa sobre los 31 documentos, con `python eval/runner.py`. Tabla entera en
+[RESULTS.md](RESULTS.md).
+
+| | |
+|---|---|
+| Veredictos correctos | **24 / 31 (77%)** |
+| Total del documento leído correctamente | 26 / 31 |
+| Identificador tributario leído correctamente | 19 / 31 |
+| Reintentos de extracción necesarios | 0 |
+
+**El veredicto esperado no está escrito a mano.** Para cada documento se consulta el
+ERP con el mismo `lookup_purchase_order` que usa el agente, partiendo del ground truth
+anotado a mano en `eval/annotations_raw.json`. Si cambia el seed, cambia el esperado.
+Un oráculo que miente es peor que no tener oráculo.
+
+### El dataset
+
+31 documentos, ninguno elegido de antemano por conveniencia:
+
+- **4 facturas bolivianas reales** (Pinturas Monopol Ltda., Santa Cruz), fotografiadas
+  de costado con un celular.
+- **27 del corpus público SROIE** — tickets escaneados de comercios de Malasia.
+  Aportan la suciedad que el caso de uso exige: térmicos descoloridos, sombras de
+  escaneo, sellos superpuestos, arrugas, anotaciones manuscritas. **No fueron
+  recolectados por este equipo** y el sistema no afirma lo contrario.
+
+Rendimiento por condición física del documento:
+
+| Condición | Aciertos |
+|---|---|
+| Limpio | 11/13 |
+| Térmico descolorido | 5/6 |
+| Con sombra | 6/8 |
+| Torcido | 5/6 |
+| Manuscrito | 2/2 |
+| Borroso | 2/3 |
+
+### Los fallos
+
+Los siete errores están explicados con su caso y su texto de OCR en
+[docs/limitations.md](docs/limitations.md). En resumen: **ninguno es una alucinación**.
+Son identificadores que el OCR no pudo leer en papel térmico (`Gst #o; 0u0g4528768`
+donde el real es `000394528768`), y en todos esos casos el sistema respondió
+`NO_PO_FOUND` o `UNCERTAIN` — un falso negativo visible, nunca un número inventado.
+
+Se decidió **no** agregar emparejamiento difuso de identificadores contra el ERP.
+Cerraría esos casos, pero convertiría un falso negativo visible en un falso positivo
+silencioso: el sistema diría "esta factura corresponde a esta orden" sin que sea cierto.
+En conciliación de pagos ese error es mucho peor.
 
 ---
 
@@ -90,42 +228,51 @@ vale más que uno que alucina un número con confianza.
 Los modelos de 1–4B fallan de formas reconocibles. El sistema las trata como casos
 esperados, no como excepciones:
 
-**1. Capa de rescate antes de gastar un reintento.**
-Los modelos pequeños envuelven el JSON en bloques de código o lo rodean de prosa aunque
-se les prohíba explícitamente. Eso es ruido de formato, no un error de contenido:
-[`_salvage_json`](backend/core/orchestrator.py) lo limpia en vez de castigarlo con un
-reintento.
+**1. Capa de rescate antes de gastar un reintento.** Los modelos pequeños envuelven el
+JSON en bloques de código o lo rodean de prosa aunque se les prohíba explícitamente.
+Eso es ruido de formato, no un error de contenido: `_salvage_json` lo limpia en vez de
+castigarlo con un reintento.
 
-**2. Self-correction loop con feedback específico.**
-Si la validación falla igual, el error concreto se reinyecta en el prompt del reintento
-— el modelo recibe *qué* estuvo mal, no solo la orden de reintentar. Agotados los
-intentos, el resultado es `UNCERTAIN`; nunca se completa a mano lo que faltó.
+**2. Self-correction loop con feedback específico.** Si la validación falla igual, el
+error concreto se reinyecta en el prompt del reintento. Agotados los intentos, el
+resultado es `UNCERTAIN`; nunca se completa a mano lo que faltó.
 
 **3. Validación estricta.** `ExtractedInvoice` usa `extra="forbid"`: si el modelo
-alucina un campo que no pedimos, la validación falla y se dispara el reintento, en vez
-de que el dato basura entre silenciosamente al pipeline.
+alucina un campo que no pedimos, la validación falla y se dispara el reintento.
 
-**4. Decimal de punta a punta.** Ningún importe toca un `float`. Comparar plata con
-floats produce falsos mismatches por redondeo.
+**4. Decimal de punta a punta.** Ningún importe toca un `float`.
 
-**5. Fallback en el razonamiento.** Si el modelo devuelve una nota vacía, hay un texto
-de respaldo generado en código y el hecho queda registrado en la traza.
+**5. Razonamiento apagado en la extracción.** Qwen3.5 es un modelo de razonamiento: si
+se lo deja, abre un bloque `<think>`, analiza el ticket línea por línea y se queda sin
+presupuesto de tokens antes de emitir la primera llave del JSON. Pasa exactamente eso.
+`reasoning_budget: 0` lo apaga — y no es una optimización: el prompt de extracción dice
+*"NO razones, NO calcules, NO completes lo que no ves"*. Un transcriptor que razona es
+donde un modelo chico empieza a rellenar los huecos que no pudo leer.
 
 **6. El modelo redacta, no deduce.** Los checks y el delta entran al prompt de triaje
 como hechos ya establecidos, con instrucción explícita de no recalcularlos.
 
-Los modos de fallo están reproducidos en
-[`FlakyLLMClient`](backend/core/llm/stub.py) — JSON truncado, campo alucinado, respuesta
-en prosa, monto en palabras, el esquema devuelto en lugar de los datos — y es contra eso
-que se prueba el retry loop.
+### Seis bugs que solo aparecen contra el motor real
+
+Ninguno era deducible de la documentación. Quedan anotados en el código porque son el
+tipo de cosa que cuesta horas encontrar dos veces:
+
+| Síntoma | Causa |
+|---|---|
+| `RPCError: Invalid input` | `options=None` viajaba como `"options": null`, y zod `.optional()` acepta `undefined` pero rechaza `null` |
+| `ContextOverflowError` | `ctx_size` por defecto es 1024 tokens; el prompt de extracción con texto OCR lo desborda |
+| `Unexpected empty grammar stack` | `response_format: json_object` arma una gramática GBNF que revienta en esta versión del motor |
+| `ggml_gallocr_alloc_graph failed` | `canvasSize` 2560 (default del addon) agota la memoria del grafo de CRAFT con el modelo de texto cargado |
+| `Model with ID "..." not found` | `modelSrc` necesita `registry://<source>/<path>`; un nombre suelto solo funciona si ya está en caché |
+| Descargas que "funcionaban" pero no bajaban nada | `download_asset` devuelve `{success: false}` sin lanzar excepción |
 
 ---
 
 ## Cómo levantar el proyecto
 
-Requiere **Python 3.12+**, **Node** y **Docker**. Solo la base de datos está
-containerizada; el backend y el dashboard corren nativos, cada uno en su propia
-terminal.
+Requiere **Python 3.12+**, **Node 20+**, **Docker** y **Vulkan ≥ 1.4** (Windows lo
+exige incluso para inferencia por CPU). Solo la base de datos está containerizada; el
+backend y el dashboard corren nativos.
 
 ### 1. Dependencias
 
@@ -136,8 +283,8 @@ python -m venv .venv
 .venv/Scripts/pip install -r requirements.txt     # Linux/macOS: .venv/bin/pip
 ```
 
-`npm install` no es opcional: el worker de OCR arranca el runtime **Bare** desde
-`node_modules`, y las rutas a ese runtime son dos de las variables del `.env`.
+`npm install` no es opcional: el worker de inferencia arranca el runtime **Bare** desde
+`node_modules`, y las rutas a ese runtime son dos variables del `.env`.
 
 ### 2. Configuración
 
@@ -145,116 +292,138 @@ python -m venv .venv
 cp .env.example .env                              # Windows: copy .env.example .env
 ```
 
-Hay que editar tres valores a mano; el resto funciona con los defaults:
+Solo hay que editar dos valores; el resto funciona con los defaults:
 
 | Variable | Qué poner |
 |---|---|
 | `QVAC_SDK_DIR` | Ruta **absoluta** a `node_modules/@qvac/sdk` |
 | `QVAC_BARE_PATH` | Ruta **absoluta** al ejecutable `bare` de `node_modules` |
-| `QVAC_MODEL_OCR` | ID del modelo OCR en el registry de QVAC, o ruta a los pesos |
 
-Mientras `QVAC_MODEL_OCR` siga en `PENDIENTE`, el motor de OCR devuelve ese
-estado en `quality_flags` en vez de fallar en silencio. El resto del pipeline
-funciona igual con los clientes de prueba (ver el selector de motor más abajo).
+Los modelos **no se declaran en el `.env`**: se resuelven del registry de QVAC en cada
+arranque.
 
-### 3. Base de datos
+### 3. Modelos
+
+```bash
+.venv/Scripts/python scripts/setup_models.py                                    # par de OCR, ~98 MB
+.venv/Scripts/python scripts/setup_models.py --texto Qwen3.5-4B-Q4_K_M --descargar-texto --saltar-ocr   # 2,74 GB
+```
+
+> El CLI `@qvac/cli` **no** tiene `qvac models pull` (sus comandos son `bundle`,
+> `doctor`, `verify`, `openai`, `serve`). La descarga se hace por el SDK, y eso es lo
+> que hace este script. Es P2P: si el swarm no engancha, reintentar suele resolverlo.
+
+Verificación rápida de que el entorno está sano, antes de tocar nada:
+
+```bash
+.venv/Scripts/python docs/environment/preflight.py
+```
+
+### 4. Base de datos
 
 ```bash
 docker compose up -d
-```
-
-Levanta MariaDB 11 en el puerto **3307** y carga `db/schema.sql` y `db/seed.sql`
-automáticamente. Comprobá que quedó sana antes de seguir:
-
-```bash
 docker compose ps                                 # STATUS debe decir (healthy)
 ```
 
-### 4. Backend — terminal 1
+Levanta MariaDB 11 en el puerto **3307** y carga `db/schema.sql` y `db/seed.sql`
+automáticamente: 30 órdenes de compra, 9 del caso de demostración y 21 generadas contra
+los documentos reales del dataset.
+
+### 5. Backend — terminal 1
 
 ```bash
 .venv/Scripts/python -m uvicorn backend.api.main:app --port 8123 --reload
-```
-
-Verificá que responde y que alcanza la base:
-
-```bash
 curl localhost:8123/health
-# {"status":"ok","db":"connected","llm_client":"stub","test_clients":["stub","flaky"]}
 ```
 
-Si `db` dice `unreachable`, el backend está bien pero el contenedor no —
-volvé al paso 3.
+**Este proceso es el dueño del worker de QVAC.** No puede haber otro proceso QVAC
+corriendo al mismo tiempo (el registry toma un lock de archivo). Si `eval/runner.py`
+está corriendo, el backend no arranca, y al revés.
 
-### 5. Dashboard — terminal 2
+### 6. Dashboard — terminal 2
 
 ```bash
 .venv/Scripts/python -m streamlit run frontend/app.py
 ```
 
-Queda en **`localhost:8501`**. Ya podés subir una factura.
+Queda en **`localhost:8501`**.
 
-### 6. Tests (opcional)
+### 7. Reproducir la evaluación
 
 ```bash
-.venv/Scripts/python -m pytest -q                 # 78 tests
+.venv/Scripts/python eval/runner.py               # los 31, ~12 minutos
+.venv/Scripts/python eval/runner.py --solo R002 R028 R026   # tres casos, ~1 minuto
 ```
 
-Los de DB y API se saltan solos si MariaDB no está levantada, así que el resto
-de la suite corre igual sin Docker.
+Reescribe `RESULTS.md` y deja el contrato completo de cada documento —con el texto crudo
+del OCR y la traza por fases— en `logs/runs/`.
 
-> Los tests escriben en la misma base que la demo. Si vas a grabar, corré
-> `docker compose down -v && docker compose up -d` para arrancar con la base
-> recién sembrada.
+### 8. Tests
+
+```bash
+.venv/Scripts/python -m pytest -q                 # 93 tests
+```
+
+Los de DB y API se saltan solos si MariaDB no está levantada.
+
+> Los tests escriben en la misma base que la demo. Antes de grabar:
+> `docker compose down -v && docker compose up -d`.
 
 ### Notas de entorno
 
-- La DB expone el **3307** para no chocar con una instalación local de
-  MySQL/MariaDB en 3306.
-- El backend usa el **8123** porque en Windows el 8000 suele caer en un rango
-  reservado (`WinError 10013`).
-- Si cambiás `db/schema.sql`, hace falta `docker compose down -v` antes de
-  `up -d`: los scripts de init solo corren sobre un volumen vacío.
-- Docker Compose deriva el nombre del proyecto del **nombre de la carpeta**. Si
-  levantaste el contenedor desde otra ruta, `docker compose ps` acá no lo va a
-  ver y `up -d` va a chocar en el 3307. Se resuelve con
-  `docker rm -f concilia-db` y volver a levantar.
+- La DB expone el **3307** para no chocar con MySQL/MariaDB local en 3306.
+- El backend usa el **8123**: en Windows el 8000 suele caer en un rango reservado
+  (`WinError 10013`).
+- Si cambiás `db/schema.sql` o `db/seed.sql`, hace falta `docker compose down -v` antes
+  de `up -d`: los scripts de init solo corren sobre un volumen vacío.
+- **Un solo proceso QVAC a la vez.** El cliente del registry toma un lock; dos procesos
+  simultáneos dan `File descriptor could not be locked`.
 
-### Probarlo
+---
 
-```bash
-printf 'imagen' > factura_oriente.jpg
-curl -F "file=@factura_oriente.jpg" localhost:8123/reconcile
+## Estructura
+
+```
+ocr/engine.py              Etapa 1 — OCR con el SDK de QVAC
+backend/
+  core/
+    llm/qvac.py            Etapa 2 — cliente QVAC real (OCR + generación)
+    llm/factory.py         Selección del motor
+    llm/prompts.py         Plantillas de extracción y triaje
+    orchestrator.py        Las fases, retry loop y traza
+    checks.py              Verificación determinista — no toca el LLM
+    schemas.py             Contratos Pydantic entre fases
+    tools/db_tool.py       La herramienta del agente: consultar el ERP
+  db/                      Engine SQLAlchemy y persistencia
+  api/                     Capa fina FastAPI
+confidence/detectors.py    Verificación de valores contra el texto del OCR
+frontend/                  Dashboard Streamlit
+db/schema.sql              ERP simulado + tablas de auditoría
+db/seed.sql                30 órdenes de compra
+data/receipts/             Los 31 documentos del dataset
+eval/
+  annotations_raw.json     Ground truth anotado a mano
+  dataset_map_erp.md       Qué debe pasar con cada documento, y por qué
+  runner.py                Corre el agente sobre el dataset y emite RESULTS.md
+scripts/
+  setup_models.py          Descarga los modelos desde el registry
+  gen_seed_erp.py          Genera el seed del ERP desde el ground truth
+  permalinks.py            Regenera la tabla de permalinks del README
+  probe_extraccion.py      Prueba las dos etapas sobre una imagen, sin base de datos
+docs/
+  limitations.md           Los ocho límites conocidos, con casos reales
+  environment/             Preflight y sondas de introspección del SDK
+logs/runs/                 Un contrato por documento procesado
 ```
 
-El stub elige su respuesta según el nombre del archivo, para que la demo sea
-reproducible. Nombres reconocidos: `oriente` (24 cajas contra 20 autorizadas),
-`match`, `descuadre`, `grande`, `extra`, `iva`, `cancelada`, `subcobro`,
-`desconocido`, `ilegible`.
+`core/` no importa nada de `api/`. La interfaz `LLMClient` devuelve **texto crudo** a
+propósito: el parseo y la validación son responsabilidad del orquestador, que es donde
+vive la fiabilidad.
 
-Para ver el retry loop en acción, levantar con `LLM_CLIENT=flaky` — el cliente falla las
-dos primeras llamadas y el agente se recupera igual.
+---
 
-### Selector de motor en el dashboard (provisional)
-
-Mientras QVAC no esté integrado, la barra lateral del dashboard trae un **selector de
-motor de inferencia**: permite alternar entre `stub` y `flaky` por request, sin editar el
-`.env` ni reiniciar nada. Cambiar el motor y volver a subir el mismo documento lo
-reprocesa, que es la forma de comparar los dos comportamientos sobre la misma factura.
-
-Solo la respuesta del modelo está simulada. El resto del pipeline —extracción validada,
-consulta al ERP, las verificaciones deterministas, los reintentos, el veredicto y la
-traza— corre de verdad.
-
-**El switch es código temporal y sale entero cuando `QvacLLMClient` esté listo.** Los
-cuatro puntos a borrar están listados en el comentario de cabecera de
-[`_selector_de_motor`](frontend/app.py), y los tests que lo cubren viven aislados en
-`backend/tests/test_llm_switch.py` y `frontend/tests/test_app_switch.py`.
-
-> Los tests de `test_api.py` escriben en la misma base que la demo. Para dejarla
-> limpia antes de grabar: `TRUNCATE reconciliations; TRUNCATE invoices;`
-
-### Endpoints
+## Endpoints
 
 | Método | Ruta | Qué hace |
 |---|---|---|
@@ -267,79 +436,17 @@ cuatro puntos a borrar están listados en el comentario de cabecera de
 | `GET` | `/reconciliations/{id}/document` | El documento original, como evidencia |
 | `POST` | `/reconciliations/{id}/decision` | Aprobar o escalar a compras |
 
----
-
-## Estructura
-
-```
-backend/
-  core/                    Lógica pura — no importa nada de HTTP
-    orchestrator.py        Las fases, retry loop y traza
-    checks.py              Verificación determinista — no toca el LLM
-    schemas.py             Contratos Pydantic entre fases
-    llm/
-      base.py              LLMClient (ABC) — el punto de enganche de QVAC
-      stub.py              Stubs deterministas + inyector de fallos
-      prompts.py           Plantillas de extracción y triaje
-    tools/db_tool.py       La herramienta del agente: consultar el ERP
-  db/
-    session.py             Engine SQLAlchemy
-    repository.py          Persistencia de la traza y la decisión humana
-  api/                     Capa fina FastAPI
-  tests/
-frontend/
-  app.py                   Layout y navegación
-  api_client.py            Única capa que habla HTTP con el backend
-  view_model.py            Adapta las respuestas del backend a la tarjeta
-  components/
-    invoice_card.py        La tarjeta de comparación
-    checks_row.py          "verificado por código"
-    trace_view.py          La traza del agente, colapsable
-db/
-  schema.sql               ERP simulado + tablas de auditoría
-  seed.sql                 9 órdenes que ejercitan los veredictos y los checks
-storage/documents/         Documentos originales (fuera de git)
-```
-
-`core/` no importa nada de `api/`. La interfaz `LLMClient` devuelve **texto crudo** a
-propósito: el parseo y la validación son responsabilidad del orquestador, que es donde
-vive la fiabilidad. Si la interfaz devolviera objetos ya validados estaríamos
-escondiendo el problema que la Pista 2 pide resolver.
-
-El frontend **no reimplementa ninguna lógica de negocio**: qué valores se pintan en
-rojo sale de los checks del backend, y el estado auto-aprobada/a revisar lo decide la
-política en código. `view_model.py` solo traduce veredictos a banderas de color.
+El dashboard trae además un selector que permite forzar los motores de prueba (`stub`,
+`flaky`) por request, para demostrar el retry loop en vivo sin depender de que el modelo
+falle. La configuración de producción es `LLM_CLIENT=qvac` y la UI no puede pisarla.
 
 ---
 
-## Verificación
+## Lo que no se probó
 
-78 tests, todos en verde. Los del orquestador, los checks y el view model corren sin
-Docker; los de DB y API se saltan solos si MariaDB no está levantada.
-
-Verificado end-to-end con los diez casos de fixture: los cuatro veredictos se producen
-correctamente, la traza registra las fases que corresponden a cada camino (5 pasos en el
-flujo completo, 3 cuando no hay OC, 2 cuando el documento es ilegible), y todo queda
-persistido en `reconciliations` con su JSON de checks y de traza.
-
-El caso del mockup (`F-00842` · Distribuidora del Oriente) reproduce exactamente:
-`MISMATCH`, delta `Bs 340,00`, `cantidad vs OC` en `WARN`, y la nota *"Se facturaron 4
-unidades de más. Diferencia de Bs 340,00 a favor del proveedor."*
-
-Con `LLM_CLIENT=flaky` el agente absorbe dos respuestas rotas y termina en `MATCH` con
-`retries: 2` registrado en la traza.
-
-El dashboard se verifica con `AppTest` de Streamlit además de a ojo — así se detectó,
-por ejemplo, que envolver la tarjeta en un expander rompía la app por anidamiento.
-
----
-
-## Lo que falta
-
-- **Fase 3 — QVAC.** Implementar `QvacLLMClient(LLMClient)` con OCR y comprensión
-  multimodal del SDK. El orquestador no cambia, y el frontend tampoco: consume la misma
-  API sin importar qué cliente LLM haya detrás.
-- **Entradas reales desordenadas.** Fotos con mala iluminación y arrugas — el track
-  premia robustez sobre entradas que no elegiste de antemano, no un PDF limpio.
-- **Medición de fiabilidad.** Correr la misma tarea N veces contra el modelo real y
-  reportar la tasa de éxito, incluidos los fallos que no se pudieron arreglar.
+- **Backend Vulkan.** Toda la medición es en CPU. El addon lo soporta y la máquina
+  tiene GPU dedicada, pero no se midió el efecto en latencia ni se verificó que el
+  detector y el modelo de texto convivan en VRAM.
+- **El pipeline docTR** como alternativa a easyocr en térmicos descoloridos.
+- **Modelos de texto más grandes** que el 4B.
+- **PDFs y documentos multipágina.** El pipeline recibe una imagen por documento.

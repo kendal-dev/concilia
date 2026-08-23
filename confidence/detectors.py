@@ -6,7 +6,15 @@ sabe, antes de decir un numero.
 """
 from difflib import SequenceMatcher
 
-from reconcile.text import normalizar_espacios
+
+def normalizar_espacios(s: str) -> str:
+    """Colapsa saltos de linea y espacios multiples, conserva tildes y mayusculas.
+
+    El OCR corta lineas donde se le da la gana y mete espacios dobles. Comparar sin
+    colapsar eso produce falsos negativos: un span correcto se marcaria inventado.
+    """
+    return " ".join((s or "").split())
+
 
 UMBRAL_SPAN = 0.90
 TOLERANCIA_ARITMETICA = 1.0

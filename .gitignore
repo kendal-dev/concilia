@@ -11,3 +11,9 @@ node_modules/
 .qvac_cache/
 *.gguf
 dummy.jpg
+
+# Scratch de la sesion de desarrollo, no forma parte del proyecto
+descargar_ocr.py
+test_ocr.py
+docs/environment/probe_*_out.txt
+docs/environment/probe_out.txt
