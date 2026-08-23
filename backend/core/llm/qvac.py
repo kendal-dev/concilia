@@ -36,17 +36,31 @@ import tetherto.qvac_sdk as q
 
 from backend.core.llm.base import LLMClient
 from backend.core.llm.prompts import EXTRACTION_SYSTEM, TRIAGE_SYSTEM
-from confidence.detectors import span_verificado
-from ocr.engine import MotorOCR, _dic, url_registry
+from confidence.detectors import valor_aparece, variantes_numero
+from ocr.engine import MotorOCR, _dic, src_de_env, url_registry
 
 # Modelo de texto por defecto. Se puede fijar otro con QVAC_MODEL_TEXT (ruta local o
 # registry://) o elegir por nombre con QVAC_MODEL_TEXT_NAME.
 MODELO_TEXTO_POR_DEFECTO = "Qwen3.5-4B-Q4_K_M"
 
+# Qwen3.5 es un modelo de razonamiento: si se lo deja, abre un bloque <think>, se
+# pone a analizar el ticket linea por linea y se queda sin presupuesto de tokens
+# antes de emitir la primera llave del JSON. Pasa exactamente eso en la practica.
+#
+# `reasoning_budget: 0` lo apaga. Y no es una optimizacion: el prompt de extraccion
+# dice textual "NO razones, NO calcules, NO completes lo que no ves". Un transcriptor
+# que razona es justo lo que NO queremos - ahi es donde un modelo chico empieza a
+# rellenar los huecos que no pudo leer.
+_RAZONAMIENTO = int(os.environ.get("QVAC_REASONING_BUDGET", "0"))
+
 # Extraccion: determinista. Un recibo no es una tarea creativa.
-GEN_EXTRACCION = {"temp": 0.0, "predict": 1024}
+GEN_EXTRACCION = {"temp": 0.0, "predict": 768,
+                  "reasoning_budget": _RAZONAMIENTO,
+                  "remove_thinking_from_context": True}
 # Triaje: una pizca de temperatura para que la nota no salga robotica.
-GEN_TRIAJE = {"temp": 0.3, "predict": 320}
+GEN_TRIAJE = {"temp": 0.3, "predict": 320,
+              "reasoning_budget": _RAZONAMIENTO,
+              "remove_thinking_from_context": True}
 
 # Respuesta vacia y honesta cuando el OCR no devolvio nada legible. El orquestador
 # la valida sin problema y `has_minimum_data()` da False -> UNCERTAIN. Es exactamente
@@ -57,6 +71,10 @@ SIN_LECTURA = json.dumps({
     "total_amount": None, "currency": None, "line_items": [],
     "confidence": {},
 })
+
+
+def _bandera(clave):
+    return os.environ.get(clave, "").strip().lower() in ("1", "true", "si", "yes", "on")
 
 
 class _Motor:
@@ -99,7 +117,9 @@ class _Motor:
         await self.ocr.__aenter__()
         self.transport = self.ocr.transport
 
-        src = os.environ.get("QVAC_MODEL_TEXT")
+        # src_de_env descarta rutas locales inexistentes: una linea vieja del .env
+        # apuntando a un .gguf que nunca se bajo no puede tumbar el arranque.
+        src = src_de_env("QVAC_MODEL_TEXT")
         elegido = None
         if not src:
             filtro = os.environ.get("QVAC_MODEL_TEXT_NAME", MODELO_TEXTO_POR_DEFECTO)
@@ -116,13 +136,20 @@ class _Motor:
                 )
             src = url_registry(elegido)
 
+        # `ctx_size` por defecto es 1024 tokens (verificado en el esquema
+        # llamacpp-config del SDK). El prompt de extraccion mas el texto de un OCR
+        # sucio lo pasa sin esfuerzo, y el motor responde ContextOverflowError. Se
+        # sube, y se deja regulable: mas contexto es mas RAM, y en esta maquina el
+        # detector CRAFT compite por la misma memoria.
+        ctx = int(os.environ.get("QVAC_TEXT_CTX", "4096"))
         self.modelo_texto = await q.load_model(
             self.transport, model_src=src, model_type="llamacpp-completion",
-            model_config={})
+            model_config={"ctx_size": ctx})
         self.info = {
             "ocr": self.ocr.info,
             "texto_src": src,
             "texto_nombre": (elegido or {}).get("name"),
+            "ctx_size": ctx,
             "arranque_s": round(time.time() - t0, 2),
         }
 
@@ -133,33 +160,43 @@ class _Motor:
             history=[{"role": "system", "content": sistema},
                      {"role": "user", "content": usuario}],
             generation_params=generacion,
-            # json_object obliga al motor a emitir JSON sintacticamente valido.
-            # No garantiza el esquema - de eso se encarga el validador del
-            # orquestador - pero elimina de raiz el JSON roto, que es el modo de
-            # fallo mas comun de un modelo de 2-4B cuantizado.
+            # Que el bloque <think> no termine mezclado con el JSON de salida.
+            capture_thinking=False,
+            # `response_format: json_object` hace que el motor arme una gramatica
+            # GBNF para forzar JSON sintacticamente valido. Suena ideal, pero en
+            # esta version revienta con "Unexpected empty grammar stack after
+            # accepting piece", que es un fallo del motor y no del prompt. Queda
+            # apagado por defecto y detras de QVAC_JSON_ESTRICTO por si una version
+            # posterior lo arregla.
+            #
+            # No hace falta: el orquestador ya recorta el bloque entre la primera
+            # llave y la ultima con `_salvage_json`, y si aun asi no valida, le
+            # devuelve el error al modelo y reintenta. La fiabilidad esta puesta en
+            # el bucle de correccion, no en confiar en que el modelo salga perfecto.
             response_format={"type": "json_object"} if json_estricto else None,
         )
         return await run.text()
 
 
-def _verificar_valores(datos, texto_ocr):
-    """Comprueba que cada valor extraido aparezca de verdad en el texto del OCR.
+NUMERICOS = ("total_amount", "subtotal", "tax_amount")
+CAMPOS_VERIFICABLES = ("supplier_tax_id", "invoice_number") + NUMERICOS
 
-    No le pedimos al modelo que declare de donde saco cada dato: se lo verificamos
-    nosotros contra el texto crudo. Un total que no aparece en el OCR es un total
-    inventado, y eso hay que poder decirlo.
+
+def _verificar_valores(datos, texto_ocr):
+    """Verifica contra el texto del OCR cada valor que el modelo dice haber leido.
+
+    La logica vive en `confidence/detectors.py` - es un detector, no un detalle de
+    este cliente - y desde aca solo se decide QUE campos se verifican.
     """
-    interesantes = ("supplier_tax_id", "invoice_number", "total_amount",
-                    "subtotal", "tax_amount")
     salida = {}
-    for campo in interesantes:
+    for campo in CAMPOS_VERIFICABLES:
         valor = datos.get(campo)
         if valor in (None, ""):
             continue
-        aguja = f"{valor:.2f}".rstrip("0").rstrip(".") if isinstance(valor, float) \
-            else str(valor)
-        ok, ratio = span_verificado(aguja, texto_ocr)
-        salida[campo] = {"valor": aguja, "aparece_en_ocr": ok, "similitud": ratio}
+        ok, ratio = valor_aparece(valor, texto_ocr, es_numero=campo in NUMERICOS)
+        impreso = (sorted(variantes_numero(valor))[0] if campo in NUMERICOS
+                   else str(valor))
+        salida[campo] = {"valor": impreso, "aparece_en_ocr": ok, "similitud": ratio}
     return salida
 
 
@@ -179,7 +216,14 @@ class QvacLLMClient(LLMClient):
         return motor.ejecutar(self._extraer(motor, image_bytes, feedback))
 
     async def _extraer(self, motor, image_bytes, feedback):
-        ocr = await motor.ocr.leer_bytes(image_bytes)
+        # Las facturas fotografiadas suelen venir giradas 90 grados y sin EXIF de
+        # orientacion. El barrido prueba varios angulos y se queda con la mejor
+        # lectura, a costa de una pasada de OCR por angulo: por eso es opcional y
+        # se enciende con QVAC_OCR_ROTAR=1 cuando el dataset lo justifica.
+        if _bandera("QVAC_OCR_ROTAR"):
+            ocr = await motor.ocr.leer_orientada(datos=image_bytes)
+        else:
+            ocr = await motor.ocr.leer_bytes(image_bytes)
         texto = (ocr.get("raw_text") or "").strip()
 
         if not texto:
@@ -190,14 +234,23 @@ class QvacLLMClient(LLMClient):
             }
             return SIN_LECTURA
 
+        # Red de seguridad: un OCR que se dispara (una foto enorme, una pagina con
+        # mucho ruido) puede desbordar el contexto igual. Se recorta y se declara
+        # en la evidencia, en vez de dejar que el motor falle a mitad de la corrida.
+        limite = int(os.environ.get("QVAC_OCR_MAX_CHARS", "6000"))
+        recortado = len(texto) > limite
+        if recortado:
+            texto = texto[:limite]
+
         partes = ["TEXTO EXTRAIDO POR OCR DEL DOCUMENTO:", "---", texto, "---"]
         if feedback:
             partes += ["", feedback]
         partes.append("Devolve unicamente el objeto JSON del esquema.")
 
         t0 = time.time()
-        crudo = await motor.completar(EXTRACTION_SYSTEM, "\n".join(partes),
-                                      GEN_EXTRACCION, json_estricto=True)
+        crudo = await motor.completar(
+            EXTRACTION_SYSTEM, "\n".join(partes), GEN_EXTRACCION,
+            json_estricto=_bandera("QVAC_JSON_ESTRICTO"))
         extraccion_s = round(time.time() - t0, 2)
 
         verificados = {}
@@ -215,6 +268,7 @@ class QvacLLMClient(LLMClient):
             "extraccion_s": extraccion_s,
             "valores_verificados": verificados,
             "reintento": bool(feedback),
+            "texto_recortado": recortado,
         }
         return crudo
 

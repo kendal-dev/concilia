@@ -13,8 +13,40 @@ from backend.core.llm.stub import FlakyLLMClient, StubLLMClient
 from backend.db.session import check_connection
 
 
-def test_sin_override_manda_la_configuracion():
-    assert isinstance(get_llm_client("match.jpg"), StubLLMClient)
+def _con_motor(monkeypatch, valor):
+    """Fija LLM_CLIENT para el test y limpia la cache de get_settings.
+
+    Sin esto el test lee el .env del operador: con LLM_CLIENT=qvac (que es la
+    configuracion real desde que existe QvacLLMClient) fallaba, y habria vuelto a
+    fallar en la maquina del juez por el mismo motivo. Lo que se quiere verificar
+    es el MAPEO del factory, no que motor eligio quien corre el proyecto.
+    """
+    from backend.config import get_settings
+
+    monkeypatch.setenv("LLM_CLIENT", valor)
+    get_settings.cache_clear()
+    return get_settings
+
+
+def test_sin_override_manda_la_configuracion(monkeypatch):
+    get_settings = _con_motor(monkeypatch, "stub")
+    try:
+        assert isinstance(get_llm_client("match.jpg"), StubLLMClient)
+    finally:
+        get_settings.cache_clear()
+
+
+def test_la_configuracion_qvac_devuelve_el_cliente_real(monkeypatch):
+    """La rama que reemplazo al NotImplementedError de la Fase 4."""
+    pytest.importorskip("tetherto.qvac_sdk",
+                        reason="requiere el SDK de QVAC instalado")
+    from backend.core.llm.qvac import QvacLLMClient
+
+    get_settings = _con_motor(monkeypatch, "qvac")
+    try:
+        assert isinstance(get_llm_client("match.jpg"), QvacLLMClient)
+    finally:
+        get_settings.cache_clear()
 
 
 def test_el_override_elige_el_cliente():

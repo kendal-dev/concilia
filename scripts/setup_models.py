@@ -22,6 +22,7 @@ import argparse
 import asyncio
 import os
 import sys
+import time
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -51,12 +52,13 @@ def url_registry(d):
 
 async def descargar(tr, etiqueta, src):
     print(f"  {etiqueta}\n    {src}", flush=True)
+    t0 = time.time()
     resp = dic(await q.download_asset(tr, DownloadAssetRequest(
         type="downloadAsset", asset_src=src, with_progress=True)))
     if not resp.get("success", False):
-        print(f"    FALLO: {resp.get('error')}")
+        print(f"    FALLO tras {time.time() - t0:.0f}s: {resp.get('error')}", flush=True)
         return False
-    print("    OK")
+    print(f"    OK en {time.time() - t0:.0f}s", flush=True)
     return True
 
 
@@ -89,7 +91,7 @@ async def main(a):
         if a.listar:
             return 0
 
-        familias = ["easyocr"] + (["doctr"] if a.doctr else [])
+        familias = [] if a.saltar_ocr else ["easyocr"] + (["doctr"] if a.doctr else [])
         ok = True
         for familia in familias:
             recon, det = PARES[familia]
@@ -136,4 +138,6 @@ if __name__ == "__main__":
                     help="filtra modelos de texto del registry (etapa 2)")
     ap.add_argument("--descargar-texto", action="store_true",
                     help="ademas de listarlo, descarga el primero que coincida")
+    ap.add_argument("--saltar-ocr", action="store_true",
+                    help="no toca el par de OCR (util si ya esta en cache)")
     sys.exit(asyncio.run(main(ap.parse_args())))

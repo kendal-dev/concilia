@@ -153,3 +153,38 @@ def test_transposicion(a, b, esperado):
 def test_decimal_corrido():
     assert rules.decimal_corrido(247.50, 24.75) is True
     assert rules.decimal_corrido(247.50, 274.50) is False
+
+
+# ------------------------------------------- verificacion de valores en el OCR
+OCR_TICKET_REAL = """(Co.REG
+933109-X )
+Lot
+1851-A
+TOTAL
+RM 33 ,92
+TOTAL RoundED
+RH 33,90
+CASH
+RH 50.00"""
+
+
+@pytest.mark.parametrize("valor", [33.9, 33.90, 33.92, 50.0])
+def test_valor_numerico_se_reconoce_con_coma_y_cero_final(valor):
+    """El modelo devuelve 33.9 y el ticket dice "RH 33,90". Marcar eso como
+    inventado seria un falso positivo del detector de honestidad - peor que no
+    tener detector, porque hunde la confianza de un dato correcto."""
+    from confidence.detectors import valor_aparece
+    ok, ratio = valor_aparece(valor, OCR_TICKET_REAL, es_numero=True)
+    assert ok, f"{valor} esta en el ticket y se marco como inventado (sim {ratio})"
+
+
+def test_valor_numerico_inventado_se_detecta():
+    from confidence.detectors import valor_aparece
+    ok, _ = valor_aparece(999.99, OCR_TICKET_REAL, es_numero=True)
+    assert ok is False
+
+
+def test_valor_de_texto_tolera_espacios_del_ocr():
+    from confidence.detectors import valor_aparece
+    assert valor_aparece("933109-X", OCR_TICKET_REAL)[0] is True
+    assert valor_aparece("999999-Z", OCR_TICKET_REAL)[0] is False

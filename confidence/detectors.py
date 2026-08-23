@@ -41,6 +41,53 @@ def span_verificado(span, raw_text, umbral=UMBRAL_SPAN):
     return mejor >= umbral, round(mejor, 3)
 
 
+def variantes_numero(valor):
+    """Todas las formas en que un mismo importe puede aparecer impreso.
+
+    El modelo devuelve 33.9 y el ticket dice "RH 33,90": mismo numero, tres
+    diferencias de escritura - coma decimal, cero final, y los espacios sueltos que
+    el OCR intercala ("RM 33 ,92").
+    """
+    try:
+        n = float(valor)
+    except (TypeError, ValueError):
+        return set()
+    con_cero = f"{n:.2f}"
+    sin_cero = con_cero.rstrip("0").rstrip(".")
+    variantes = set()
+    for base in (con_cero, sin_cero):
+        variantes.add(base)
+        variantes.add(base.replace(".", ","))
+    return variantes
+
+
+def valor_aparece(valor, texto_ocr, es_numero=False):
+    """(aparece, similitud) de un valor extraido dentro del texto crudo del OCR.
+
+    Es el detector de honestidad aplicado al reves: en vez de creerle al modelo
+    cuando declara de donde saco un dato, se busca el dato en el texto. Si no esta,
+    lo invento.
+
+    Cuidado con lo que prueba: verifica PROCEDENCIA, no correccion. Un numero de
+    factura leido de la linea de la direccion existe en el texto y aun asi es el
+    campo equivocado. Esto descarta la alucinacion, no el error de interpretacion.
+    """
+    compacto = "".join((texto_ocr or "").split())
+    if es_numero:
+        variantes = variantes_numero(valor)
+        if not variantes:
+            return False, 0.0
+        hallada = next((v for v in sorted(variantes) if v in compacto), None)
+        if hallada:
+            return True, 1.0
+        return span_verificado(sorted(variantes)[0], texto_ocr)
+    aguja = str(valor)
+    ok, ratio = span_verificado(aguja, texto_ocr)
+    if not ok and "".join(aguja.split()) in compacto:
+        return True, 1.0
+    return ok, ratio
+
+
 def coherencia_aritmetica(items, total, tolerancia=TOLERANCIA_ARITMETICA):
     """Suma(qty * unit_price) contra el total declarado.
 
