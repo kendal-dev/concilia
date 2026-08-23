@@ -17,3 +17,4 @@ descargar_ocr.py
 test_ocr.py
 docs/environment/probe_*_out.txt
 docs/environment/probe_out.txt
+_to_delete/

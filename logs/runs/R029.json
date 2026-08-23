@@ -1,0 +1,275 @@
+{
+  "resumen": {
+    "receipt_id": "R029",
+    "origen": "boliviano_real",
+    "condicion": [
+      "torcido"
+    ],
+    "esperado": "MISMATCH",
+    "obtenido": "MISMATCH",
+    "acierto": true,
+    "po_esperada": "OC-220",
+    "po_obtenida": "OC-220",
+    "delta": "270.00",
+    "campos": {
+      "supplier_tax_id": "correcto",
+      "total_amount": "correcto"
+    },
+    "reintentos": 0,
+    "latencia_s": 50.56,
+    "ocr_s": 9.17,
+    "bloques_ocr": 20,
+    "conf_ocr": 0.692,
+    "verificados": {
+      "supplier_tax_id": {
+        "valor": "5900398",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "invoice_number": {
+        "valor": "13065",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "total_amount": {
+        "valor": "1630,2",
+        "aparece_en_ocr": false,
+        "similitud": 0.667
+      }
+    },
+    "checks": {
+      "line_sum": "SKIPPED",
+      "tax": "SKIPPED",
+      "quantity_vs_po": "SKIPPED",
+      "unit_price_vs_po": "SKIPPED",
+      "total_vs_po": "FAIL",
+      "po_status": "PASS"
+    },
+    "nota": "La factura de Pinturas Monopol Ltda (NIT 5900398) cobra 270.00 Bs más que el monto autorizado en la orden OC-220 vigente. El operador debe rechazar el pago inmediatamente y solicitar al proveedor la justificación del excedente antes de autorizar cualquier movimiento."
+  },
+  "texto_ocr": "Shot\non\nFree Yond\nP6\n0\nCamera\nPinturas Monopol Ltda\nFactura #o.\n13065\nNombre\nSILVER FUENTES NUñEZ\nNIT/CI\n5900398\nFecha\n22/05/2026\nTotal Bs\n1,630.20\nVistialice su factuwa escaneanco € cádigo QR\nLuquer duda cumuriiquese & tIUU- IU-1quu\nP4074135.C2",
+  "contrato": {
+    "verdict": "MISMATCH",
+    "auto_approved": false,
+    "checks": [
+      {
+        "name": "line_sum",
+        "label": "suma de lineas",
+        "status": "SKIPPED",
+        "detail": "La factura no tiene lineas legibles.",
+        "expected": null,
+        "actual": null
+      },
+      {
+        "name": "tax",
+        "label": "impuestos",
+        "status": "SKIPPED",
+        "detail": "La factura no declara subtotal e impuesto por separado.",
+        "expected": null,
+        "actual": null
+      },
+      {
+        "name": "quantity_vs_po",
+        "label": "cantidad vs OC",
+        "status": "SKIPPED",
+        "detail": "La factura no tiene lineas legibles.",
+        "expected": null,
+        "actual": null
+      },
+      {
+        "name": "unit_price_vs_po",
+        "label": "precio unit. vs OC",
+        "status": "SKIPPED",
+        "detail": "La factura no tiene lineas legibles.",
+        "expected": null,
+        "actual": null
+      },
+      {
+        "name": "total_vs_po",
+        "label": "total vs OC",
+        "status": "FAIL",
+        "detail": "La factura cobra 270.00 mas que la orden OC-220 (1360.20 autorizados).",
+        "expected": "1360.20",
+        "actual": "1630.2"
+      },
+      {
+        "name": "po_status",
+        "label": "estado de la OC",
+        "status": "PASS",
+        "detail": "La orden OC-220 esta vigente (OPEN).",
+        "expected": null,
+        "actual": "OPEN"
+      }
+    ],
+    "note": "La factura de Pinturas Monopol Ltda (NIT 5900398) cobra 270.00 Bs más que el monto autorizado en la orden OC-220 vigente. El operador debe rechazar el pago inmediatamente y solicitar al proveedor la justificación del excedente antes de autorizar cualquier movimiento.",
+    "invoice": {
+      "supplier_tax_id": "5900398",
+      "supplier_name": "Pinturas Monopol Ltda",
+      "invoice_number": "13065",
+      "invoice_date": "22/05/2026",
+      "subtotal": null,
+      "tax_amount": null,
+      "total_amount": "1630.2",
+      "currency": "Bs",
+      "line_items": [],
+      "confidence": {
+        "supplier_tax_id": 0.9,
+        "total_amount": 0.9
+      }
+    },
+    "purchase_order": {
+      "id": 120,
+      "po_number": "OC-220",
+      "supplier_tax_id": "5900398",
+      "supplier_name": "Pinturas Monopol Ltda.",
+      "currency": "BOB",
+      "total_amount": "1360.20",
+      "status": "OPEN",
+      "issued_at": "2026-05-22",
+      "line_items": [
+        {
+          "description": "Compra segun comprobante R029",
+          "quantity": "1.000",
+          "unit_price": "1360.20",
+          "line_total": "1360.20"
+        }
+      ]
+    },
+    "amount_delta": "270.00",
+    "trace": {
+      "steps": [
+        {
+          "phase": "extraction",
+          "summary": "Documento leido en 1 intento(s).",
+          "input": null,
+          "output": {
+            "supplier_tax_id": "5900398",
+            "supplier_name": "Pinturas Monopol Ltda",
+            "invoice_number": "13065",
+            "invoice_date": "22/05/2026",
+            "subtotal": null,
+            "tax_amount": null,
+            "total_amount": "1630.2",
+            "currency": "Bs",
+            "line_items": [],
+            "confidence": {
+              "supplier_tax_id": 0.9,
+              "total_amount": 0.9
+            }
+          },
+          "duration_ms": 49257,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "lookup",
+          "summary": "Orden OC-220 recuperada del ERP.",
+          "input": {
+            "supplier_tax_id": "5900398"
+          },
+          "output": {
+            "id": 120,
+            "po_number": "OC-220",
+            "supplier_tax_id": "5900398",
+            "supplier_name": "Pinturas Monopol Ltda.",
+            "currency": "BOB",
+            "total_amount": "1360.20",
+            "status": "OPEN",
+            "issued_at": "2026-05-22",
+            "line_items": [
+              {
+                "description": "Compra segun comprobante R029",
+                "quantity": "1.000",
+                "unit_price": "1360.20",
+                "line_total": "1360.20"
+              }
+            ]
+          },
+          "duration_ms": 6,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "verification",
+          "summary": "6 verificaciones ejecutadas en codigo, 1 con observaciones.",
+          "input": null,
+          "output": [
+            {
+              "name": "line_sum",
+              "label": "suma de lineas",
+              "status": "SKIPPED",
+              "detail": "La factura no tiene lineas legibles.",
+              "expected": null,
+              "actual": null
+            },
+            {
+              "name": "tax",
+              "label": "impuestos",
+              "status": "SKIPPED",
+              "detail": "La factura no declara subtotal e impuesto por separado.",
+              "expected": null,
+              "actual": null
+            },
+            {
+              "name": "quantity_vs_po",
+              "label": "cantidad vs OC",
+              "status": "SKIPPED",
+              "detail": "La factura no tiene lineas legibles.",
+              "expected": null,
+              "actual": null
+            },
+            {
+              "name": "unit_price_vs_po",
+              "label": "precio unit. vs OC",
+              "status": "SKIPPED",
+              "detail": "La factura no tiene lineas legibles.",
+              "expected": null,
+              "actual": null
+            },
+            {
+              "name": "total_vs_po",
+              "label": "total vs OC",
+              "status": "FAIL",
+              "detail": "La factura cobra 270.00 mas que la orden OC-220 (1360.20 autorizados).",
+              "expected": "1360.20",
+              "actual": "1630.2"
+            },
+            {
+              "name": "po_status",
+              "label": "estado de la OC",
+              "status": "PASS",
+              "detail": "La orden OC-220 esta vigente (OPEN).",
+              "expected": null,
+              "actual": "OPEN"
+            }
+          ],
+          "duration_ms": 0,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "reasoning",
+          "summary": "Nota de auditoria redactada.",
+          "input": "=== DATOS EXTRAIDOS DE LA FACTURA FISICA ===\nProveedor: Pinturas Monopol Ltda\nNIT: 5900398\nNumero de factura: 13065\nFecha: 22/05/2026\nTotal cobrado: 1630.2 Bs\n\n=== REGISTRO OFICIAL RECUPERADO DEL ERP ===\nOrden de compra: OC-220\nProveedor: Pinturas Monopol Ltda.\nEstado de la orden: OPEN\nTotal autorizado: 1360.20 BOB\nLineas autorizadas:\n- Compra segun comprobante R029: 1 x 1360.2 = 1360.2\n\n=== DIFERENCIA (calculada por el sistema, no la recalcules) ===\nLa factura cobra 270.00 MAS de lo autorizado.\n\n=== VERIFICACIONES YA EJECUTADAS POR EL SISTEMA ===\n[FALLA] total vs OC: La factura cobra 270.00 mas que la orden OC-220 (1360.20 autorizados).\n[OK] estado de la OC: La orden OC-220 esta vigente (OPEN).\n\nEscribi la nota interna para el operador.",
+          "output": "La factura de Pinturas Monopol Ltda (NIT 5900398) cobra 270.00 Bs más que el monto autorizado en la orden OC-220 vigente. El operador debe rechazar el pago inmediatamente y solicitar al proveedor la justificación del excedente antes de autorizar cualquier movimiento.",
+          "duration_ms": 1278,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "persist",
+          "summary": "Dictamen MISMATCH registrado; queda a revisar.",
+          "input": null,
+          "output": null,
+          "duration_ms": 6,
+          "retries": 0,
+          "error": null
+        }
+      ],
+      "started_at": "2026-08-23T02:17:03.113040"
+    },
+    "invoice_id": 75,
+    "reconciliation_id": 75,
+    "human_decision": "PENDING"
+  }
+}

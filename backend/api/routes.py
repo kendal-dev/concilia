@@ -44,7 +44,7 @@ def health() -> dict:
         "status": "ok" if db_ok else "degraded",
         "db": "connected" if db_ok else "unreachable",
         "llm_client": get_settings().llm_client,
-        # TEMPORAL: el frontend arma el selector con esto. Se borra con QVAC.
+        # Con esto el dashboard arma su selector de motor de diagnostico.
         "test_clients": list(CLIENTES_DE_PRUEBA),
     }
 
@@ -59,8 +59,8 @@ def stats() -> dict:
 @router.post("/reconcile", response_model=ReconciliationResult)
 async def reconcile_invoice(
     file: UploadFile = File(...),
-    # TEMPORAL: permite al dashboard elegir motor por request mientras QVAC no
-    # este integrado. Se borra junto con el selector del frontend.
+    # Permite forzar un cliente determinista para UNA request, sin tocar el .env
+    # ni reiniciar el backend. Sin este campo corre el motor de settings (QVAC).
     llm_client: str | None = Form(None),
 ) -> ReconciliationResult:
     image_bytes = await file.read()

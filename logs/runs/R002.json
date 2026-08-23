@@ -1,0 +1,330 @@
+{
+  "resumen": {
+    "receipt_id": "R002",
+    "origen": "sroie",
+    "condicion": [
+      "limpio"
+    ],
+    "esperado": "MATCH",
+    "obtenido": "MATCH",
+    "acierto": true,
+    "po_esperada": "OC-200",
+    "po_obtenida": "OC-200",
+    "delta": "0.00",
+    "campos": {
+      "supplier_tax_id": "correcto",
+      "total_amount": "correcto"
+    },
+    "reintentos": 0,
+    "latencia_s": 16.19,
+    "ocr_s": 7.54,
+    "bloques_ocr": 65,
+    "conf_ocr": 0.662,
+    "verificados": {
+      "supplier_tax_id": {
+        "valor": "933109-X",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "invoice_number": {
+        "valor": "8970669",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "total_amount": {
+        "valor": "33,9",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "subtotal": {
+        "valor": "33,92",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      }
+    },
+    "checks": {
+      "line_sum": "FAIL",
+      "tax": "SKIPPED",
+      "quantity_vs_po": "WARN",
+      "unit_price_vs_po": "WARN",
+      "total_vs_po": "PASS",
+      "po_status": "PASS"
+    },
+    "nota": "La factura de JOHÚR SDn BhD muestra una suma de líneas inconsistentes (725.14 RM) frente al total autorizado en la OC-200 (33.90 MYR), aunque el monto total coincide. Dado que ninguna línea de la factura coincide con los ítems autorizados en la orden de compra OC-200, el operador debe solicitar al proveedor la documentación detallada de las líneas de la factura para justificar el cobro antes de proceder con el pago."
+  },
+  "texto_ocr": "tan woon yann\nMR\n0 .1 .Y\nJOHÚR ) SDn BhD\n(Co.REG\n933109-X )\nLot\n1851-A\n185;-B\nJALAN KPB\nKawASAN PeRinduStRIAN BALAKoNG\n43300 SERI KEMBANGAN , SELANGOR\nMR diY TESCO\nTERBAU )\nInVOICE-\nCHOPPInG Board 35.5x25.sCM 8o3M#\nEZtohdo5\n24\n8970669\nX 19.00\n19.00\nAIR PRESSUPE SPRAYER SX-575-1\n1 .5L\nHCo3-7\n15\n9066468\n8 .02\n8.02\nHaxco\nWindshiled CLeanER 12oML\nHa14-3a\n48\n9557031100236\n3 .02\n3 .02\nBOPP TAPE\n48MM*1ooM CLEAR\nFZ-04\n36\n69358 18350846\n1 X\n3.88\n3,88\nItem(s\nOty(s)\nTOTAL\nRM 33 ,92\nRounding ADJUSTMEY\n~RM 0.02\nTOTAL RoundED\n3}-f0\nRH 33,90\nCASH\nRH 50.00\nChANGE\nRM\n16 . 10\n12-01-19 21:13 Sho1 ZKo9\nT4 R0ooo27830\nOPERATOR TRAInee CASHIER\nEXCHANGE\nARE ALLOHED Within\nDaYs WITH RECEIPT\nSTRICTLY\nNo Cash REFUND",
+  "contrato": {
+    "verdict": "MATCH",
+    "auto_approved": false,
+    "checks": [
+      {
+        "name": "line_sum",
+        "label": "suma de lineas",
+        "status": "FAIL",
+        "detail": "Las lineas suman 725.14 pero el total declarado es 33.9.",
+        "expected": "33.9",
+        "actual": "725.14"
+      },
+      {
+        "name": "tax",
+        "label": "impuestos",
+        "status": "SKIPPED",
+        "detail": "La factura no declara subtotal e impuesto por separado.",
+        "expected": null,
+        "actual": null
+      },
+      {
+        "name": "quantity_vs_po",
+        "label": "cantidad vs OC",
+        "status": "WARN",
+        "detail": "Ninguna linea de la factura coincide con la orden de compra.",
+        "expected": null,
+        "actual": null
+      },
+      {
+        "name": "unit_price_vs_po",
+        "label": "precio unit. vs OC",
+        "status": "WARN",
+        "detail": "Ninguna linea de la factura coincide con la orden de compra.",
+        "expected": null,
+        "actual": null
+      },
+      {
+        "name": "total_vs_po",
+        "label": "total vs OC",
+        "status": "PASS",
+        "detail": "El total facturado coincide con la orden OC-200.",
+        "expected": "33.90",
+        "actual": "33.9"
+      },
+      {
+        "name": "po_status",
+        "label": "estado de la OC",
+        "status": "PASS",
+        "detail": "La orden OC-200 esta vigente (OPEN).",
+        "expected": null,
+        "actual": "OPEN"
+      }
+    ],
+    "note": "La factura de JOHÚR SDn BhD muestra una suma de líneas inconsistentes (725.14 RM) frente al total autorizado en la OC-200 (33.90 MYR), aunque el monto total coincide. Dado que ninguna línea de la factura coincide con los ítems autorizados en la orden de compra OC-200, el operador debe solicitar al proveedor la documentación detallada de las líneas de la factura para justificar el cobro antes de proceder con el pago.",
+    "invoice": {
+      "supplier_tax_id": "933109-X",
+      "supplier_name": "JOHÚR SDn BhD",
+      "invoice_number": "8970669",
+      "invoice_date": "12-01-19",
+      "subtotal": "33.92",
+      "tax_amount": null,
+      "total_amount": "33.9",
+      "currency": "RM",
+      "line_items": [
+        {
+          "description": "CHOPPInG Board 35.5x25.sCM 8o3M#",
+          "quantity": "24",
+          "unit_price": "19.0",
+          "line_total": "456.0"
+        },
+        {
+          "description": "AIR PRESSUPE SPRAYER SX-575-1",
+          "quantity": "15",
+          "unit_price": "8.02",
+          "line_total": "120.3"
+        },
+        {
+          "description": "Haxco Windshiled CLeanER 12oML",
+          "quantity": "48",
+          "unit_price": "3.02",
+          "line_total": "144.96"
+        },
+        {
+          "description": "BOPP TAPE 48MM*1ooM CLEAR",
+          "quantity": "1",
+          "unit_price": "3.88",
+          "line_total": "3.88"
+        }
+      ],
+      "confidence": {
+        "supplier_tax_id": 0.85,
+        "total_amount": 0.95
+      }
+    },
+    "purchase_order": {
+      "id": 100,
+      "po_number": "OC-200",
+      "supplier_tax_id": "933109-X",
+      "supplier_name": "MR D.I.Y. (JOHOR) SDN BHD",
+      "currency": "MYR",
+      "total_amount": "33.90",
+      "status": "OPEN",
+      "issued_at": "2019-01-12",
+      "line_items": [
+        {
+          "description": "Compra segun comprobante R002",
+          "quantity": "1.000",
+          "unit_price": "33.90",
+          "line_total": "33.90"
+        }
+      ]
+    },
+    "amount_delta": "0.00",
+    "trace": {
+      "steps": [
+        {
+          "phase": "extraction",
+          "summary": "Documento leido en 1 intento(s).",
+          "input": null,
+          "output": {
+            "supplier_tax_id": "933109-X",
+            "supplier_name": "JOHÚR SDn BhD",
+            "invoice_number": "8970669",
+            "invoice_date": "12-01-19",
+            "subtotal": "33.92",
+            "tax_amount": null,
+            "total_amount": "33.9",
+            "currency": "RM",
+            "line_items": [
+              {
+                "description": "CHOPPInG Board 35.5x25.sCM 8o3M#",
+                "quantity": "24",
+                "unit_price": "19.0",
+                "line_total": "456.0"
+              },
+              {
+                "description": "AIR PRESSUPE SPRAYER SX-575-1",
+                "quantity": "15",
+                "unit_price": "8.02",
+                "line_total": "120.3"
+              },
+              {
+                "description": "Haxco Windshiled CLeanER 12oML",
+                "quantity": "48",
+                "unit_price": "3.02",
+                "line_total": "144.96"
+              },
+              {
+                "description": "BOPP TAPE 48MM*1ooM CLEAR",
+                "quantity": "1",
+                "unit_price": "3.88",
+                "line_total": "3.88"
+              }
+            ],
+            "confidence": {
+              "supplier_tax_id": 0.85,
+              "total_amount": 0.95
+            }
+          },
+          "duration_ms": 14139,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "lookup",
+          "summary": "Orden OC-200 recuperada del ERP.",
+          "input": {
+            "supplier_tax_id": "933109-X"
+          },
+          "output": {
+            "id": 100,
+            "po_number": "OC-200",
+            "supplier_tax_id": "933109-X",
+            "supplier_name": "MR D.I.Y. (JOHOR) SDN BHD",
+            "currency": "MYR",
+            "total_amount": "33.90",
+            "status": "OPEN",
+            "issued_at": "2019-01-12",
+            "line_items": [
+              {
+                "description": "Compra segun comprobante R002",
+                "quantity": "1.000",
+                "unit_price": "33.90",
+                "line_total": "33.90"
+              }
+            ]
+          },
+          "duration_ms": 5,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "verification",
+          "summary": "6 verificaciones ejecutadas en codigo, 3 con observaciones.",
+          "input": null,
+          "output": [
+            {
+              "name": "line_sum",
+              "label": "suma de lineas",
+              "status": "FAIL",
+              "detail": "Las lineas suman 725.14 pero el total declarado es 33.9.",
+              "expected": "33.9",
+              "actual": "725.14"
+            },
+            {
+              "name": "tax",
+              "label": "impuestos",
+              "status": "SKIPPED",
+              "detail": "La factura no declara subtotal e impuesto por separado.",
+              "expected": null,
+              "actual": null
+            },
+            {
+              "name": "quantity_vs_po",
+              "label": "cantidad vs OC",
+              "status": "WARN",
+              "detail": "Ninguna linea de la factura coincide con la orden de compra.",
+              "expected": null,
+              "actual": null
+            },
+            {
+              "name": "unit_price_vs_po",
+              "label": "precio unit. vs OC",
+              "status": "WARN",
+              "detail": "Ninguna linea de la factura coincide con la orden de compra.",
+              "expected": null,
+              "actual": null
+            },
+            {
+              "name": "total_vs_po",
+              "label": "total vs OC",
+              "status": "PASS",
+              "detail": "El total facturado coincide con la orden OC-200.",
+              "expected": "33.90",
+              "actual": "33.9"
+            },
+            {
+              "name": "po_status",
+              "label": "estado de la OC",
+              "status": "PASS",
+              "detail": "La orden OC-200 esta vigente (OPEN).",
+              "expected": null,
+              "actual": "OPEN"
+            }
+          ],
+          "duration_ms": 2,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "reasoning",
+          "summary": "Nota de auditoria redactada.",
+          "input": "=== DATOS EXTRAIDOS DE LA FACTURA FISICA ===\nProveedor: JOHÚR SDn BhD\nNIT: 933109-X\nNumero de factura: 8970669\nFecha: 12-01-19\nTotal cobrado: 33.9 RM\nLineas facturadas:\n- CHOPPInG Board 35.5x25.sCM 8o3M#: 24 x 19 = 456\n- AIR PRESSUPE SPRAYER SX-575-1: 15 x 8.02 = 120.3\n- Haxco Windshiled CLeanER 12oML: 48 x 3.02 = 144.96\n- BOPP TAPE 48MM*1ooM CLEAR: 1 x 3.88 = 3.88\n\n=== REGISTRO OFICIAL RECUPERADO DEL ERP ===\nOrden de compra: OC-200\nProveedor: MR D.I.Y. (JOHOR) SDN BHD\nEstado de la orden: OPEN\nTotal autorizado: 33.90 MYR\nLineas autorizadas:\n- Compra segun comprobante R002: 1 x 33.9 = 33.9\n\n=== DIFERENCIA (calculada por el sistema, no la recalcules) ===\nLos montos coinciden exactamente.\n\n=== VERIFICACIONES YA EJECUTADAS POR EL SISTEMA ===\n[FALLA] suma de lineas: Las lineas suman 725.14 pero el total declarado es 33.9.\n[ATENCION] cantidad vs OC: Ninguna linea de la factura coincide con la orden de compra.\n[ATENCION] precio unit. vs OC: Ninguna linea de la factura coincide con la orden de compra.\n[OK] total vs OC: El total facturado coincide con la orden OC-200.\n[OK] estado de la OC: La orden OC-200 esta vigente (OPEN).\n\nEscribi la nota interna para el operador.",
+          "output": "La factura de JOHÚR SDn BhD muestra una suma de líneas inconsistentes (725.14 RM) frente al total autorizado en la OC-200 (33.90 MYR), aunque el monto total coincide. Dado que ninguna línea de la factura coincide con los ítems autorizados en la orden de compra OC-200, el operador debe solicitar al proveedor la documentación detallada de las líneas de la factura para justificar el cobro antes de proceder con el pago.",
+          "duration_ms": 2025,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "persist",
+          "summary": "Dictamen MATCH registrado; queda a revisar.",
+          "input": null,
+          "output": null,
+          "duration_ms": 7,
+          "retries": 0,
+          "error": null
+        }
+      ],
+      "started_at": "2026-08-23T02:07:01.210279"
+    },
+    "invoice_id": 48,
+    "reconciliation_id": 48,
+    "human_decision": "PENDING"
+  }
+}

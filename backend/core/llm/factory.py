@@ -7,11 +7,12 @@ from backend.config import get_settings
 from backend.core.llm.base import LLMClient
 from backend.core.llm.stub import FlakyLLMClient, StubLLMClient
 
-# --- TEMPORAL: switch de motor desde la UI --------------------------------
-# Mientras QVAC no este integrado, el dashboard puede elegir el motor por
-# request para poder demostrar el pipeline sin tocar el .env. Cuando
-# QvacLLMClient exista, se borra CLIENTES_DE_PRUEBA junto con el selector del
-# frontend y el parametro `override` vuelve a ser innecesario.
+# --- switch de motor de diagnostico ---------------------------------------
+# El motor real es el de settings (qvac). Estos dos son deterministas y se
+# pueden forzar por request desde la UI para correr el MISMO documento con y
+# sin modelo: si el veredicto cambia, el fallo estuvo en la lectura; si no
+# cambia, esta en las verificaciones o en el ERP. Tambien mantienen la suite
+# de tests libre de inferencia.
 CLIENTES_DE_PRUEBA: tuple[str, ...] = ("stub", "flaky")
 # --------------------------------------------------------------------------
 

@@ -1,6 +1,7 @@
 """Smoke test del selector de motor en el dashboard.
 
-TEMPORAL: se borra junto con el switch cuando QVAC este integrado.
+El selector es una herramienta de diagnostico: por defecto no fuerza nada y
+el agente corre con el motor local (QVAC).
 """
 
 from pathlib import Path

@@ -5,6 +5,15 @@ El operador sube una factura, ve el dictamen del agente y los datos que lo
 justifican lado a lado, y decide: aprobar o escalar.
 """
 
+import sys
+from pathlib import Path
+
+# `streamlit run frontend/app.py` agrega frontend/ a sys.path, no la raiz del
+# proyecto, asi que `from frontend import ...` revienta en un clon limpio con
+# ModuleNotFoundError. Esto lo resuelve sin depender de PYTHONPATH ni del
+# directorio desde el que se lance.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 import streamlit as st
 
 from frontend import api_client, view_model
@@ -39,16 +48,13 @@ def main() -> None:
 
 
 # ======================================================================
-# BLOQUE TEMPORAL — selector de motor de pruebas.
+# Selector de motor. QVAC es el motor real y el que corre por defecto; esto
+# permite conmutar a clientes deterministas (stub / flaky) sobre el MISMO
+# documento sin editar el .env ni reiniciar el backend.
 #
-# Existe solo mientras QVAC no este integrado: permite demostrar el pipeline
-# completo con clientes deterministas sin editar el .env ni reiniciar nada.
-#
-# PARA QUITARLO cuando QvacLLMClient este listo, borrar:
-#   1. esta funcion y la linea `motor = _selector_de_motor(estado)` en main()
-#   2. el parametro `motor` de _zona_de_carga() y de api_client.reconcile()
-#   3. el Form `llm_client` del endpoint POST /reconcile
-#   4. CLIENTES_DE_PRUEBA y el argumento `override` de get_llm_client()
+# Se conserva a proposito: es como se aisla un fallo del modelo de un fallo del
+# pipeline. Si el veredicto cambia al conmutar, el problema estuvo en la
+# lectura; si no cambia, esta en las verificaciones o en el ERP.
 # ======================================================================
 
 _ETIQUETAS_MOTOR = {
@@ -70,17 +76,26 @@ def _selector_de_motor(estado: dict) -> str | None:
         format_func=lambda o: _ETIQUETAS_MOTOR.get(o, o),
         key="motor_prueba",
         help=(
-            "Provisional: QVAC todavia no esta integrado, asi que el agente "
-            "corre contra clientes de prueba. Este selector desaparece cuando "
-            "la inferencia local este conectada."
+            "Por defecto corre el motor configurado en el backend: QVAC, "
+            "inferencia local en este dispositivo. Las otras opciones son "
+            "clientes deterministas para aislar fallos del modelo de fallos "
+            "del pipeline."
         ),
     )
+    if elegido == opciones[0]:
+        st.sidebar.caption(
+            "Inferencia local: OCR y modelo de lenguaje corriendo con el SDK "
+            "de QVAC en esta maquina. Ningun dato sale por la red."
+        )
+        return None
+
     st.sidebar.caption(
-        "⚠️ Modo de pruebas. Sin inferencia real: las respuestas del modelo "
-        "estan simuladas. Todo lo demas del pipeline —verificaciones, "
-        "reintentos, veredicto y traza— corre de verdad."
+        "⚠️ Motor de prueba seleccionado. Las respuestas del modelo estan "
+        "simuladas; el resto del pipeline —verificaciones, reintentos, veredicto "
+        "y traza— corre igual. Volve a la primera opcion para usar la "
+        "inferencia local."
     )
-    return None if elegido == opciones[0] else elegido
+    return elegido
 
 
 def _estado_backend() -> dict | None:
@@ -109,8 +124,11 @@ def _fila_stats() -> None:
 def _zona_de_carga(motor: str | None = None) -> None:
     archivo = st.file_uploader(
         "Subir factura",
-        type=["jpg", "jpeg", "png", "webp", "pdf"],
-        help="Foto, escaneo o PDF. El documento no sale del dispositivo.",
+        # Sin PDF a proposito: el motor OCR recibe una imagen, y un PDF llega
+        # como bytes que no puede decodificar. Anunciarlo y fallar en vivo es
+        # peor que no anunciarlo. Queda declarado en docs/limitations.md.
+        type=["jpg", "jpeg", "png", "webp"],
+        help="Foto o escaneo del comprobante. El documento no sale del dispositivo.",
     )
     if archivo is None:
         return

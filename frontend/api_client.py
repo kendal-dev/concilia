@@ -9,7 +9,11 @@ import os
 import requests
 
 BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8123")
-TIMEOUT = 120  # la inferencia local puede tardar; con QVAC real, mas todavia
+# El arranque en frio del worker de QVAC son ~78 s medidos, y encima va la
+# inferencia del documento (P95 de 51 s). Con 120 s la primera subida sin
+# precalentar se cortaba sola y la UI acusaba al backend de colgado cuando
+# estaba trabajando. 300 s es el mismo techo que usa el curl de run_demo.ps1.
+TIMEOUT = 300
 
 
 class BackendError(RuntimeError):
@@ -51,8 +55,8 @@ def reconcile(
     content_type: str | None,
     motor: str | None = None,
 ) -> dict:
-    """`motor` es TEMPORAL: fuerza un cliente de prueba (stub/flaky) para esta
-    request sin tocar el .env. Se quita cuando QVAC este integrado."""
+    """`motor` fuerza un cliente determinista (stub/flaky) para esta request
+    sin tocar el .env. En None corre el motor del backend: QVAC, local."""
     archivos = {"file": (nombre, data, content_type or "application/octet-stream")}
     datos = {"llm_client": motor} if motor else None
     return _pedir("POST", "/reconcile", files=archivos, data=datos).json()

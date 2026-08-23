@@ -1,7 +1,8 @@
-"""Tests del selector de motor de pruebas.
+"""Tests del selector de motor.
 
-TEMPORAL: este archivo se borra junto con el switch, cuando QVAC este
-integrado y el motor deje de elegirse desde la UI.
+Cubren que el override por request funcione y que NO pueda usarse para forzar
+el motor real: `override="qvac"` tiene que fallar, porque el motor real se
+elige por configuracion y no por una peticion HTTP.
 """
 
 import pytest

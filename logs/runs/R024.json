@@ -1,0 +1,248 @@
+{
+  "resumen": {
+    "receipt_id": "R024",
+    "origen": "sroie",
+    "condicion": [
+      "sombra"
+    ],
+    "esperado": "MISMATCH",
+    "obtenido": "NO_PO_FOUND",
+    "acierto": false,
+    "po_esperada": "OC-219",
+    "po_obtenida": null,
+    "delta": null,
+    "campos": {
+      "supplier_tax_id": "incorrecto",
+      "total_amount": "correcto"
+    },
+    "reintentos": 0,
+    "latencia_s": 26.28,
+    "ocr_s": 16.89,
+    "bloques_ocr": 107,
+    "conf_ocr": 0.79,
+    "verificados": {
+      "supplier_tax_id": {
+        "valor": "9481000689913856",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "invoice_number": {
+        "valor": "CS1802/27714",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "total_amount": {
+        "valor": "153,35",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "subtotal": {
+        "valor": "144,68",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "tax_amount": {
+        "valor": "8,68",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      }
+    },
+    "checks": {
+      "line_sum": "FAIL",
+      "tax": "FAIL"
+    },
+    "nota": "No existe orden de compra para el NIT 9481000689913856 (TED] HENG STATIENERY B BDDKS). Verificar si el proveedor esta dado de alta o si el NIT se leyo mal."
+  },
+  "texto_ocr": "TED] HENG STATIENERY B BDDKS\nJALAN\n(001451637-M}\nNo\n53\n#ESAR, 45600\nBAIANG BERJUNTAI\nSELANGOR DARUL EHSAN\nTEL ; 03\n-3271\n9872\nFAX\n08-3271\nGST Ne.\n9481\n000689913856\n[SIMPLIFID IAN INVOICE\nCASH\nReceipst No\nCS1802/27714\nDatz\n12/02/2018\nITEM\nQTY\nU/P\nDISC'%\nAMOUNT\n(RM)\n9555067700208\n10\n10.57\n0.00\n105.66 *\nIK YELLOW 7OGRAMS\n9557583450025\n17.45\n0 OO\n17.45\nPAPYRUS DARK COLOUR PAPER\n4974052801334\n2.70\n0.00\n2.70*\nARTLINE 70\n9557546953990\n0.85\n0.00\n0.85\nFASTER CXSN BALL PEN\n6924238702311\n2\n0,85\n0.00\n1.70 *\nCBE HANDYCUTTER\n9556655112694\n8.40\n0.00\n8.40 +\nCBE A4 SIZE 20 POCKETS REFILLABLE NEW\nCLEAR HOLDER\n9557369305006\n3.96\n0.00\n7,92 +\nEAGLE F4 120 NUMBERING FOOLSCAP\nBOOK\n'Total Qty.\n18\n144.68\nSUB-IOTAL\nAITn883;\n144.68\nTOTAL TAX\n8,68\nRoUNDING\n7 ?\nFEB\n0.01\nTOTAL\n{20iu\nCASH\n1153.35\nCHANGE\n0.00\nGSI SUMMARY\nTAXCODE\n\"\nAMOUNI\nTAX\n(RM)\n(RM\nSR\n6.00\n144.68\n8,68\nTOIAL :\n144.68\n8.68\nNote\nIndicated The\nItem\nSold Has Been Related\nTo GST (Goous & Services\nTax)\nGOoDS SOLD ARE NOT RETURNABLE\nTHANK YOU.",
+  "contrato": {
+    "verdict": "NO_PO_FOUND",
+    "auto_approved": false,
+    "checks": [
+      {
+        "name": "line_sum",
+        "label": "suma de lineas",
+        "status": "FAIL",
+        "detail": "Las lineas suman 143.83 pero el total declarado es 153.35.",
+        "expected": "153.35",
+        "actual": "143.83"
+      },
+      {
+        "name": "tax",
+        "label": "impuestos",
+        "status": "FAIL",
+        "detail": "El IVA declarado es 8.68, pero el 13% de 144.68 son 18.81.",
+        "expected": "18.81",
+        "actual": "8.68"
+      }
+    ],
+    "note": "No existe orden de compra para el NIT 9481000689913856 (TED] HENG STATIENERY B BDDKS). Verificar si el proveedor esta dado de alta o si el NIT se leyo mal.",
+    "invoice": {
+      "supplier_tax_id": "9481000689913856",
+      "supplier_name": "TED] HENG STATIENERY B BDDKS",
+      "invoice_number": "CS1802/27714",
+      "invoice_date": "12/02/2018",
+      "subtotal": "144.68",
+      "tax_amount": "8.68",
+      "total_amount": "153.35",
+      "currency": "RM",
+      "line_items": [
+        {
+          "description": "IK YELLOW 7OGRAMS",
+          "quantity": "10",
+          "unit_price": "10.57",
+          "line_total": "105.66"
+        },
+        {
+          "description": "PAPYRUS DARK COLOUR PAPER",
+          "quantity": "17.45",
+          "unit_price": "1.0",
+          "line_total": "17.45"
+        },
+        {
+          "description": "ARTLINE 70",
+          "quantity": "2.7",
+          "unit_price": "1.0",
+          "line_total": "2.7"
+        },
+        {
+          "description": "FASTER CXSN BALL PEN",
+          "quantity": "2",
+          "unit_price": "0.85",
+          "line_total": "1.7"
+        },
+        {
+          "description": "CBE HANDYCUTTER",
+          "quantity": "8.4",
+          "unit_price": "1.0",
+          "line_total": "8.4"
+        },
+        {
+          "description": "CBE A4 SIZE 20 POCKETS REFILLABLE NEW CLEAR HOLDER",
+          "quantity": "2",
+          "unit_price": "3.96",
+          "line_total": "7.92"
+        }
+      ],
+      "confidence": {
+        "supplier_tax_id": 0.9,
+        "total_amount": 0.95
+      }
+    },
+    "purchase_order": null,
+    "amount_delta": null,
+    "trace": {
+      "steps": [
+        {
+          "phase": "extraction",
+          "summary": "Documento leido en 1 intento(s).",
+          "input": null,
+          "output": {
+            "supplier_tax_id": "9481000689913856",
+            "supplier_name": "TED] HENG STATIENERY B BDDKS",
+            "invoice_number": "CS1802/27714",
+            "invoice_date": "12/02/2018",
+            "subtotal": "144.68",
+            "tax_amount": "8.68",
+            "total_amount": "153.35",
+            "currency": "RM",
+            "line_items": [
+              {
+                "description": "IK YELLOW 7OGRAMS",
+                "quantity": "10",
+                "unit_price": "10.57",
+                "line_total": "105.66"
+              },
+              {
+                "description": "PAPYRUS DARK COLOUR PAPER",
+                "quantity": "17.45",
+                "unit_price": "1.0",
+                "line_total": "17.45"
+              },
+              {
+                "description": "ARTLINE 70",
+                "quantity": "2.7",
+                "unit_price": "1.0",
+                "line_total": "2.7"
+              },
+              {
+                "description": "FASTER CXSN BALL PEN",
+                "quantity": "2",
+                "unit_price": "0.85",
+                "line_total": "1.7"
+              },
+              {
+                "description": "CBE HANDYCUTTER",
+                "quantity": "8.4",
+                "unit_price": "1.0",
+                "line_total": "8.4"
+              },
+              {
+                "description": "CBE A4 SIZE 20 POCKETS REFILLABLE NEW CLEAR HOLDER",
+                "quantity": "2",
+                "unit_price": "3.96",
+                "line_total": "7.92"
+              }
+            ],
+            "confidence": {
+              "supplier_tax_id": 0.9,
+              "total_amount": 0.95
+            }
+          },
+          "duration_ms": 26259,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "lookup",
+          "summary": "Sin orden de compra para el NIT 9481000689913856.",
+          "input": {
+            "supplier_tax_id": "9481000689913856"
+          },
+          "output": null,
+          "duration_ms": 9,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "verification",
+          "summary": "2 verificaciones ejecutadas en codigo, 2 con observaciones.",
+          "input": null,
+          "output": [
+            {
+              "name": "line_sum",
+              "label": "suma de lineas",
+              "status": "FAIL",
+              "detail": "Las lineas suman 143.83 pero el total declarado es 153.35.",
+              "expected": "153.35",
+              "actual": "143.83"
+            },
+            {
+              "name": "tax",
+              "label": "impuestos",
+              "status": "FAIL",
+              "detail": "El IVA declarado es 8.68, pero el 13% de 144.68 son 18.81.",
+              "expected": "18.81",
+              "actual": "8.68"
+            }
+          ],
+          "duration_ms": 0,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "persist",
+          "summary": "Dictamen NO_PO_FOUND registrado; queda a revisar.",
+          "input": null,
+          "output": null,
+          "duration_ms": 8,
+          "retries": 0,
+          "error": null
+        }
+      ],
+      "started_at": "2026-08-23T02:14:55.747532"
+    },
+    "invoice_id": 70,
+    "reconciliation_id": 70,
+    "human_decision": "PENDING"
+  }
+}

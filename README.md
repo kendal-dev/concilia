@@ -345,26 +345,47 @@ Levanta MariaDB 11 en el puerto **3307** y carga `db/schema.sql` y `db/seed.sql`
 automáticamente: 30 órdenes de compra, 9 del caso de demostración y 21 generadas contra
 los documentos reales del dataset.
 
-### 5. Backend — terminal 1
+### 5. Arranque en un comando (recomendado)
+
+```powershell
+.\scripts\run_demo.ps1
+```
+
+Levanta la base, abre el backend en su propia ventana, espera a `/health`, **precarga
+los modelos** con un documento de calentamiento, abre el dashboard y lanza el navegador.
+Para apagarlo: `.\scripts\run_demo.ps1 -Bajar`.
+
+El precalentamiento importa: la primera petición carga detector, reconocedor y modelo de
+texto —**~78 s medidos**— y sin él ese costo cae sobre la primera factura que suba el
+usuario, que parece un cuelgue. Después de calentar, cada documento tarda ~15 s.
+
+Los pasos 6 y 7 son el equivalente manual, por si preferís las terminales separadas.
+
+### 6. Backend — terminal 1
 
 ```bash
-.venv/Scripts/python -m uvicorn backend.api.main:app --port 8123 --reload
+.venv/Scripts/python -m uvicorn backend.api.main:app --port 8123
 curl localhost:8123/health
 ```
 
-**Este proceso es el dueño del worker de QVAC.** No puede haber otro proceso QVAC
-corriendo al mismo tiempo (el registry toma un lock de archivo). Si `eval/runner.py`
-está corriendo, el backend no arranca, y al revés.
+**Sin `--reload`.** Con recarga automática uvicorn levanta dos procesos y el segundo
+choca contra el lock del registry de QVAC.
 
-### 6. Dashboard — terminal 2
+**Este proceso es el dueño del worker de QVAC.** No puede haber otro proceso QVAC
+corriendo al mismo tiempo. Si `eval/runner.py` está corriendo, el backend no arranca, y
+al revés.
+
+### 7. Dashboard — terminal 2
 
 ```bash
 .venv/Scripts/python -m streamlit run frontend/app.py
 ```
 
-Queda en **`localhost:8501`**.
+Queda en **`localhost:8501`**. El dashboard acepta foto o escaneo (`jpg`, `png`,
+`webp`); **PDF no**, porque el motor OCR recibe una imagen y un PDF llegaría como bytes
+que no puede decodificar.
 
-### 7. Reproducir la evaluación
+### 8. Reproducir la evaluación
 
 ```bash
 .venv/Scripts/python eval/runner.py               # los 31, ~12 minutos
@@ -374,7 +395,7 @@ Queda en **`localhost:8501`**.
 Reescribe `RESULTS.md` y deja el contrato completo de cada documento —con el texto crudo
 del OCR y la traza por fases— en `logs/runs/`.
 
-### 8. Tests
+### 9. Tests
 
 ```bash
 .venv/Scripts/python -m pytest -q                 # 93 tests
@@ -382,8 +403,10 @@ del OCR y la traza por fases— en `logs/runs/`.
 
 Los de DB y API se saltan solos si MariaDB no está levantada.
 
-> Los tests escriben en la misma base que la demo. Antes de grabar:
-> `docker compose down -v && docker compose up -d`.
+> Los tests escriben en la misma base que la demo, y los contadores del dashboard son
+> acumulados sobre `reconciliations`. Antes de grabar o de mostrar el proyecto:
+> `docker compose down -v && docker compose up -d`, que recrea el volumen y deja la
+> tabla en cero con las 30 órdenes del seed intactas.
 
 ### Notas de entorno
 
@@ -422,6 +445,7 @@ eval/
   dataset_map_erp.md       Qué debe pasar con cada documento, y por qué
   runner.py                Corre el agente sobre el dataset y emite RESULTS.md
 scripts/
+  run_demo.ps1             Levanta base + backend + dashboard, y precarga modelos
   setup_models.py          Descarga los modelos desde el registry
   gen_seed_erp.py          Genera el seed del ERP desde el ground truth
   permalinks.py            Regenera la tabla de permalinks del README

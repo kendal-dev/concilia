@@ -1,0 +1,188 @@
+{
+  "resumen": {
+    "receipt_id": "R012",
+    "origen": "sroie",
+    "condicion": [
+      "borroso"
+    ],
+    "esperado": "MATCH",
+    "obtenido": "NO_PO_FOUND",
+    "acierto": false,
+    "po_esperada": "OC-204",
+    "po_obtenida": null,
+    "delta": null,
+    "campos": {
+      "supplier_tax_id": "incorrecto",
+      "total_amount": "correcto"
+    },
+    "reintentos": 0,
+    "latencia_s": 13.71,
+    "ocr_s": 9.69,
+    "bloques_ocr": 48,
+    "conf_ocr": 0.501,
+    "verificados": {
+      "supplier_tax_id": {
+        "valor": "0016375t116",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "invoice_number": {
+        "valor": "CS 67332",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "total_amount": {
+        "valor": "15,9",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "subtotal": {
+        "valor": "15,9",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      },
+      "tax_amount": {
+        "valor": "0",
+        "aparece_en_ocr": true,
+        "similitud": 1.0
+      }
+    },
+    "checks": {
+      "line_sum": "PASS",
+      "tax": "FAIL"
+    },
+    "nota": "No existe orden de compra para el NIT 0016375t116 (HOME HHRSTER HARDWARE & ELECTRICRL). Verificar si el proveedor esta dado de alta o si el NIT se leyo mal."
+  },
+  "texto_ocr": "HOME HHRSTER HARDWARE &\nELECTRICRL\nNQ.t13G & 115G, JALAN SETIA GEMBILANG\nUt}eG @ANDAR SETIA ALAI,\n40170 EANDAR SETIA ALAM,\nSELANGOR\nCompany Reg Na. ,5403711551-P\nGST Reg No. .0016375t116â\nTAX {ycice\nInvolze No:\nCS 67332\nDate\n22/12/2017 14.03\nCaahler#:\nCasheR\nRa\nCode\n24MMx7y MONE TaPE\n1.D0\n15.90\n15.90\nSubtotz\n15.90\nTotal Excl. of GsT\nt5.00\nTota' Ingl. 0f GST\n15.90\nTotal Amt Rounded\n15.90\nPzineiit\n50.00\nchange Dur\n34.+0\nTotzl Item (6)\n1 \n'ummay\nAnouni (RMi}\nTzx (Rji}\n58\n6%\n15.00\n@.g0\n666\nTHANK YQU\naaaeaaa\nARY Gooos RETURN PLEASE DQ WITHIN\n7\nDaysWith ORGINAL receipT Tou",
+  "contrato": {
+    "verdict": "NO_PO_FOUND",
+    "auto_approved": false,
+    "checks": [
+      {
+        "name": "line_sum",
+        "label": "suma de lineas",
+        "status": "PASS",
+        "detail": "1 linea suma el total declarado.",
+        "expected": "15.9",
+        "actual": "15.9"
+      },
+      {
+        "name": "tax",
+        "label": "impuestos",
+        "status": "FAIL",
+        "detail": "El IVA declarado es 0.0, pero el 13% de 15.9 son 2.07.",
+        "expected": "2.07",
+        "actual": "0.0"
+      }
+    ],
+    "note": "No existe orden de compra para el NIT 0016375t116 (HOME HHRSTER HARDWARE & ELECTRICRL). Verificar si el proveedor esta dado de alta o si el NIT se leyo mal.",
+    "invoice": {
+      "supplier_tax_id": "0016375t116",
+      "supplier_name": "HOME HHRSTER HARDWARE & ELECTRICRL",
+      "invoice_number": "CS 67332",
+      "invoice_date": "22/12/2017",
+      "subtotal": "15.9",
+      "tax_amount": "0.0",
+      "total_amount": "15.9",
+      "currency": "RM",
+      "line_items": [
+        {
+          "description": "24MMx7y MONE TaPE",
+          "quantity": "1.0",
+          "unit_price": "15.9",
+          "line_total": "15.9"
+        }
+      ],
+      "confidence": {
+        "supplier_tax_id": 0.5,
+        "total_amount": 0.8
+      }
+    },
+    "purchase_order": null,
+    "amount_delta": null,
+    "trace": {
+      "steps": [
+        {
+          "phase": "extraction",
+          "summary": "Documento leido en 1 intento(s).",
+          "input": null,
+          "output": {
+            "supplier_tax_id": "0016375t116",
+            "supplier_name": "HOME HHRSTER HARDWARE & ELECTRICRL",
+            "invoice_number": "CS 67332",
+            "invoice_date": "22/12/2017",
+            "subtotal": "15.9",
+            "tax_amount": "0.0",
+            "total_amount": "15.9",
+            "currency": "RM",
+            "line_items": [
+              {
+                "description": "24MMx7y MONE TaPE",
+                "quantity": "1.0",
+                "unit_price": "15.9",
+                "line_total": "15.9"
+              }
+            ],
+            "confidence": {
+              "supplier_tax_id": 0.5,
+              "total_amount": 0.8
+            }
+          },
+          "duration_ms": 13683,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "lookup",
+          "summary": "Sin orden de compra para el NIT 0016375t116.",
+          "input": {
+            "supplier_tax_id": "0016375t116"
+          },
+          "output": null,
+          "duration_ms": 3,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "verification",
+          "summary": "2 verificaciones ejecutadas en codigo, 1 con observaciones.",
+          "input": null,
+          "output": [
+            {
+              "name": "line_sum",
+              "label": "suma de lineas",
+              "status": "PASS",
+              "detail": "1 linea suma el total declarado.",
+              "expected": "15.9",
+              "actual": "15.9"
+            },
+            {
+              "name": "tax",
+              "label": "impuestos",
+              "status": "FAIL",
+              "detail": "El IVA declarado es 0.0, pero el 13% de 15.9 son 2.07.",
+              "expected": "2.07",
+              "actual": "0.0"
+            }
+          ],
+          "duration_ms": 0,
+          "retries": 0,
+          "error": null
+        },
+        {
+          "phase": "persist",
+          "summary": "Dictamen NO_PO_FOUND registrado; queda a revisar.",
+          "input": null,
+          "output": null,
+          "duration_ms": 6,
+          "retries": 0,
+          "error": null
+        }
+      ],
+      "started_at": "2026-08-23T02:10:47.719073"
+    },
+    "invoice_id": 58,
+    "reconciliation_id": 58,
+    "human_decision": "PENDING"
+  }
+}

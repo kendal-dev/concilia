@@ -1,0 +1,10 @@
+# Los finales de linea los normaliza git, no el editor. Sin esto el arbol
+# entero aparece modificado en Windows y los cambios reales se pierden en el ruido.
+* text=auto
+
+# Binarios: que git no los toque.
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.webp  binary
+*.gguf  binary
