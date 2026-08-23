@@ -1,13 +1,13 @@
 services:
   mariadb:
     image: mariadb:11
-    container_name: qvac_reconcile_db
+    container_name: concilia-db
     restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpass}
-      MARIADB_DATABASE: ${DB_NAME:-reconciliation}
-      MARIADB_USER: ${DB_USER:-reconciler}
-      MARIADB_PASSWORD: ${DB_PASSWORD:-reconcilepass}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-concilia}
+      MARIADB_DATABASE: ${DB_NAME:-concilia}
+      MARIADB_USER: ${DB_USER:-concilia}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-concilia}
     ports:
       - "${DB_PORT:-3307}:3306"
     volumes:

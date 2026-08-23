@@ -1,11 +1,13 @@
-# Inferencia local — QVAC. Es la capa obligatoria del hackathon.
+# Inferencia local — QVAC. Es la capa obligatoria del hackathon, y sus pines
+# mandan: el resto del stack se resolvio alrededor de ellos, no al reves.
 tetherto-qvac-sdk==0.17.1
 bare-rpc==0.0.1
 compact-encoding==0.0.1
 pillow==12.3.0
 
-# Backend
-fastapi==0.115.6
+# Backend. fastapi subio a 0.141 arrastrado por streamlit, que exige
+# starlette>=0.46; el rango de 0.115 llegaba solo hasta 0.42.
+fastapi==0.141.1
 uvicorn[standard]==0.34.0
 python-multipart==0.0.20
 sqlalchemy==2.0.52
@@ -15,8 +17,8 @@ pydantic-settings==2.7.0
 python-dotenv==1.2.3
 requests==2.34.2
 
-# Frontend
-streamlit==1.41.1
+# Frontend. No puede bajar a 1.41: esa exige pillow<11 y romperia el pin del SDK.
+streamlit==1.62.0
 
 # Tests
 pytest==9.1.1

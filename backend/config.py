@@ -10,9 +10,9 @@ class Settings(BaseSettings):
 
     db_host: str = "127.0.0.1"
     db_port: int = 3307
-    db_name: str = "reconciliation"
-    db_user: str = "reconciler"
-    db_password: str = "reconcilepass"
+    db_name: str = "concilia"
+    db_user: str = "concilia"
+    db_password: str = "concilia"
 
     # "stub" | "flaky" | "qvac" (qvac llega en la Fase 4)
     llm_client: str = "stub"

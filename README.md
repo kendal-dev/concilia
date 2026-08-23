@@ -123,19 +123,41 @@ que se prueba el retry loop.
 
 ## Cómo levantar el proyecto
 
-Requiere **Python 3.12+** y **Docker**. Solo la base de datos está containerizada;
-el backend y el dashboard corren nativos, cada uno en su propia terminal.
+Requiere **Python 3.12+**, **Node** y **Docker**. Solo la base de datos está
+containerizada; el backend y el dashboard corren nativos, cada uno en su propia
+terminal.
 
-### 1. Configuración y dependencias
+### 1. Dependencias
 
 ```bash
-cp .env.example .env                              # Windows: copy .env.example .env
+npm install                                       # runtime Bare + @qvac/sdk
 
 python -m venv .venv
 .venv/Scripts/pip install -r requirements.txt     # Linux/macOS: .venv/bin/pip
 ```
 
-### 2. Base de datos
+`npm install` no es opcional: el worker de OCR arranca el runtime **Bare** desde
+`node_modules`, y las rutas a ese runtime son dos de las variables del `.env`.
+
+### 2. Configuración
+
+```bash
+cp .env.example .env                              # Windows: copy .env.example .env
+```
+
+Hay que editar tres valores a mano; el resto funciona con los defaults:
+
+| Variable | Qué poner |
+|---|---|
+| `QVAC_SDK_DIR` | Ruta **absoluta** a `node_modules/@qvac/sdk` |
+| `QVAC_BARE_PATH` | Ruta **absoluta** al ejecutable `bare` de `node_modules` |
+| `QVAC_MODEL_OCR` | ID del modelo OCR en el registry de QVAC, o ruta a los pesos |
+
+Mientras `QVAC_MODEL_OCR` siga en `PENDIENTE`, el motor de OCR devuelve ese
+estado en `quality_flags` en vez de fallar en silencio. El resto del pipeline
+funciona igual con los clientes de prueba (ver el selector de motor más abajo).
+
+### 3. Base de datos
 
 ```bash
 docker compose up -d
@@ -148,7 +170,7 @@ automáticamente. Comprobá que quedó sana antes de seguir:
 docker compose ps                                 # STATUS debe decir (healthy)
 ```
 
-### 3. Backend — terminal 1
+### 4. Backend — terminal 1
 
 ```bash
 .venv/Scripts/python -m uvicorn backend.api.main:app --port 8123 --reload
@@ -162,9 +184,9 @@ curl localhost:8123/health
 ```
 
 Si `db` dice `unreachable`, el backend está bien pero el contenedor no —
-volvé al paso 2.
+volvé al paso 3.
 
-### 4. Dashboard — terminal 2
+### 5. Dashboard — terminal 2
 
 ```bash
 .venv/Scripts/python -m streamlit run frontend/app.py
@@ -172,7 +194,7 @@ volvé al paso 2.
 
 Queda en **`localhost:8501`**. Ya podés subir una factura.
 
-### 5. Tests (opcional)
+### 6. Tests (opcional)
 
 ```bash
 .venv/Scripts/python -m pytest -q                 # 78 tests
@@ -196,7 +218,7 @@ de la suite corre igual sin Docker.
 - Docker Compose deriva el nombre del proyecto del **nombre de la carpeta**. Si
   levantaste el contenedor desde otra ruta, `docker compose ps` acá no lo va a
   ver y `up -d` va a chocar en el 3307. Se resuelve con
-  `docker rm -f qvac_reconcile_db` y volver a levantar.
+  `docker rm -f concilia-db` y volver a levantar.
 
 ### Probarlo
 

@@ -3,10 +3,16 @@
 TEMPORAL: se borra junto con el switch cuando QVAC este integrado.
 """
 
+from pathlib import Path
+
 import pytest
 from streamlit.testing.v1 import AppTest
 
 from frontend import api_client
+
+# Desde Streamlit 1.62 las rutas relativas de AppTest.from_file se resuelven
+# contra el archivo que la llama, no contra el cwd. Absoluta y listo.
+APP = str(Path(__file__).resolve().parents[1] / "app.py")
 
 SALUD = {"status": "ok", "db": "connected", "llm_client": "stub",
          "test_clients": ["stub", "flaky"]}
@@ -17,7 +23,7 @@ def app(monkeypatch):
     monkeypatch.setattr(api_client, "health", lambda: SALUD)
     monkeypatch.setattr(api_client, "stats", lambda: {})
     monkeypatch.setattr(api_client, "listar_reconciliaciones", lambda limit=50: [])
-    return AppTest.from_file("frontend/app.py", default_timeout=30)
+    return AppTest.from_file(APP, default_timeout=30)
 
 
 def test_el_selector_aparece_con_las_opciones_del_backend(app):
@@ -50,6 +56,6 @@ def test_sin_test_clients_el_selector_no_se_dibuja(monkeypatch):
     monkeypatch.setattr(api_client, "health", lambda: {**SALUD, "test_clients": []})
     monkeypatch.setattr(api_client, "stats", lambda: {})
     monkeypatch.setattr(api_client, "listar_reconciliaciones", lambda limit=50: [])
-    at = AppTest.from_file("frontend/app.py", default_timeout=30).run()
+    at = AppTest.from_file(APP, default_timeout=30).run()
     assert not at.exception
     assert len(at.sidebar.radio) == 0
