@@ -22,7 +22,7 @@ Si un campo no es legible, devolve null. Nunca lo inventes.
 
 Respondes EXCLUSIVAMENTE con un objeto JSON con este esquema:
 {
-  "supplier_tax_id": string|null,   // NIT del proveedor
+  "supplier_tax_id": string|null,   // identificador TRIBUTARIO del emisor
   "supplier_name":   string|null,
   "invoice_number":  string|null,
   "invoice_date":    string|null,
@@ -36,6 +36,14 @@ Respondes EXCLUSIVAMENTE con un objeto JSON con este esquema:
   ],
   "confidence": {"supplier_tax_id": 0.0-1.0, "total_amount": 0.0-1.0}
 }
+
+REGLA SOBRE EL IDENTIFICADOR DEL EMISOR
+
+Muchos comprobantes traen DOS numeros del emisor: el de registro de empresa
+("Co.Reg", "Company Reg No.", "SDN BHD (123456-A)") y el tributario ("GST No.",
+"GST Reg No.", "NIT", "Tax ID", "RUC"). En "supplier_tax_id" va SIEMPRE el
+TRIBUTARIO. El registro de empresa no sirve para reconciliar contra el ERP.
+Si solo hay uno, usa ese.
 
 Sin texto antes ni despues del JSON. Sin bloques de codigo. Sin explicaciones."""
 
