@@ -415,7 +415,7 @@ del OCR y la traza por fases— en `logs/runs/`.
 ### 9. Tests
 
 ```bash
-.venv/Scripts/python -m pytest -q                 # 94 tests
+.venv/Scripts/python -m pytest -q                 # 102 tests
 ```
 
 Los de DB y API se saltan solos si MariaDB no está levantada.

@@ -36,7 +36,7 @@ import tetherto.qvac_sdk as q
 
 from backend.core.llm.base import LLMClient
 from backend.core.llm.prompts import EXTRACTION_SYSTEM, TRIAGE_SYSTEM
-from confidence.detectors import valor_aparece, variantes_numero
+from confidence.detectors import formato_impreso, valor_aparece
 from ocr.engine import MotorOCR, _dic, src_de_env, url_registry
 
 # Modelo de texto por defecto. Se puede fijar otro con QVAC_MODEL_TEXT (ruta local o
@@ -214,10 +214,10 @@ def _verificar_valores(datos, texto_ocr):
         valor = datos.get(campo)
         if valor in (None, ""):
             continue
-        ok, ratio = valor_aparece(valor, texto_ocr, es_numero=campo in NUMERICOS)
-        impreso = (sorted(variantes_numero(valor))[0] if campo in NUMERICOS
-                   else str(valor))
-        salida[campo] = {"valor": impreso, "aparece_en_ocr": ok, "similitud": ratio}
+        es_numero = campo in NUMERICOS
+        ok, ratio = valor_aparece(valor, texto_ocr, es_numero=es_numero)
+        salida[campo] = {"valor": formato_impreso(valor, es_numero),
+                         "aparece_en_ocr": ok, "similitud": ratio}
     return salida
 
 

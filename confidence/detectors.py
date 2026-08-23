@@ -51,9 +51,18 @@ def span_verificado(span, raw_text, umbral=UMBRAL_SPAN):
 def variantes_numero(valor):
     """Todas las formas en que un mismo importe puede aparecer impreso.
 
-    El modelo devuelve 33.9 y el ticket dice "RH 33,90": mismo numero, tres
-    diferencias de escritura - coma decimal, cero final, y los espacios sueltos que
-    el OCR intercala ("RM 33 ,92").
+    Tres ejes de variacion, y hacen falta los tres:
+
+    - **separador decimal**: el modelo devuelve 33.9 y el ticket dice "RH 33,90".
+    - **cero final**: 33.9 y 33.90 son el mismo importe.
+    - **separador de miles**: el OCR lee "1,630.20" donde el modelo devuelve
+      1630.2. Sin esta variante, un total correcto de cuatro cifras se marcaba
+      como inventado. Ese falso positivo es peor que no tener detector: hunde la
+      confianza de un dato que estaba bien, y es exactamente lo que el detector
+      existe para no hacer. Aparecio en R029 y por eso esta cubierto por un test.
+
+    Se generan las dos convenciones de agrupamiento (1,630.20 y 1.630,20) porque
+    el dataset mezcla tickets malayos y facturas bolivianas.
     """
     try:
         n = float(valor)
@@ -63,9 +72,33 @@ def variantes_numero(valor):
     sin_cero = con_cero.rstrip("0").rstrip(".")
     variantes = set()
     for base in (con_cero, sin_cero):
+        entero, _, decimales = base.partition(".")
         variantes.add(base)
         variantes.add(base.replace(".", ","))
+        if len(entero.lstrip("-")) > 3:
+            anglo = f"{int(entero):,}" + (f".{decimales}" if decimales else "")
+            # Intercambio de separadores via centinela: un replace encadenado
+            # convertiria las comas recien puestas de vuelta en puntos.
+            latino = anglo.replace(",", "\x00").replace(".", ",").replace("\x00", ".")
+            variantes.add(anglo)
+            variantes.add(latino)
     return variantes
+
+
+def formato_impreso(valor, es_numero=False):
+    """Como se muestra un valor en la evidencia que ve el operador.
+
+    Antes esto era `sorted(variantes_numero(valor))[0]`, es decir: la primera
+    variante en orden ASCII. Un detalle de ordenamiento decidiendo que lee una
+    persona. Al agregar el separador de miles ese orden cambiaba solo, asi que
+    la eleccion pasa a ser explicita.
+    """
+    if not es_numero:
+        return str(valor)
+    try:
+        return f"{float(valor):,.2f}"
+    except (TypeError, ValueError):
+        return str(valor)
 
 
 def valor_aparece(valor, texto_ocr, es_numero=False):

@@ -8,6 +8,7 @@ extraccion; corren sin OCR, sin modelo y sin base de datos.
 import pytest
 
 from confidence.detectors import (
+    formato_impreso,
     span_verificado,
     valor_aparece,
     variantes_numero,
@@ -67,3 +68,38 @@ def test_span_no_tolera_invencion():
 
 def test_texto_vacio_no_verifica_nada():
     assert valor_aparece(33.9, "", es_numero=True)[0] is False
+
+
+# ------------------------------------------------------- separador de miles
+# R029 lo destapo: el OCR leyo "1,630.20" y el detector solo generaba "1630.20",
+# asi que marcaba como inventado un total que estaba impreso en el ticket. Un
+# falso positivo aca es peor que no tener detector.
+
+@pytest.mark.parametrize("impreso", ["1,630.20", "1.630,20", "1630.20", "1630,20"])
+def test_un_total_de_cuatro_cifras_se_reconoce_lo_escriban_como_lo_escriban(impreso):
+    ok, ratio = valor_aparece(
+        1630.2, f"FACTURA 13065\nTOTAL Bs\n{impreso}\nP4074135", es_numero=True)
+    assert ok and ratio == 1.0
+
+
+def test_las_variantes_cubren_las_dos_convenciones_de_agrupamiento():
+    """El dataset mezcla tickets malayos y facturas bolivianas."""
+    v = variantes_numero(1630.2)
+    assert {"1,630.20", "1.630,20", "1630.20", "1630,2"} <= v
+
+
+def test_un_importe_de_tres_cifras_no_inventa_separador():
+    """Agrupar por debajo de mil solo produciria ruido."""
+    assert not any("," in x and "." in x for x in variantes_numero(817.95))
+
+
+def test_el_arreglo_no_vuelve_permisivo_al_detector():
+    """Un numero que no esta sigue sin estar, aunque el texto tenga otro parecido."""
+    assert valor_aparece(9999.99, "TOTAL Bs\n1,630.20\n", es_numero=True)[0] is False
+
+
+def test_el_valor_que_ve_el_operador_no_depende_del_orden_ascii():
+    """Antes salia de sorted(variantes)[0] y cambiaba solo al agregar variantes."""
+    assert formato_impreso(1630.2, es_numero=True) == "1,630.20"
+    assert formato_impreso(639.73, es_numero=True) == "639.73"
+    assert formato_impreso("F-00731") == "F-00731"
