@@ -1,27 +1,25 @@
-annotated-types==0.8.0
+# Inferencia local — QVAC. Es la capa obligatoria del hackathon, y sus pines
+# mandan: el resto del stack se resolvio alrededor de ellos, no al reves.
+tetherto-qvac-sdk==0.17.1
 bare-rpc==0.0.1
-certifi==2026.7.22
-charset-normalizer==3.5.1
-colorama==0.4.6
 compact-encoding==0.0.1
-greenlet==3.5.5
-idna==3.19
-iniconfig==2.3.0
-markdown-it-py==4.2.0
-mdurl==0.1.2
-packaging==26.3
 pillow==12.3.0
-pluggy==1.6.0
+
+# Backend. fastapi subio a 0.141 arrastrado por streamlit, que exige
+# starlette>=0.46; el rango de 0.115 llegaba solo hasta 0.42.
+fastapi==0.141.1
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+sqlalchemy==2.0.52
+pymysql==1.2.0
 pydantic==2.13.4
-pydantic_core==2.46.4
-Pygments==2.21.0
-PyMySQL==1.2.0
-pytest==9.1.1
+pydantic-settings==2.7.0
 python-dotenv==1.2.3
 requests==2.34.2
-rich==15.0.0
-SQLAlchemy==2.0.52
-tetherto-qvac-sdk==0.17.1
-typing-inspection==0.4.4
-typing_extensions==4.16.0
-urllib3==2.7.0
+
+# Frontend. No puede bajar a 1.41: esa exige pillow<11 y romperia el pin del SDK.
+streamlit==1.62.0
+
+# Tests
+pytest==9.1.1
+httpx==0.28.1

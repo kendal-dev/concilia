@@ -1,75 +1,43 @@
--- seed.sql - libro de gastos esperados de CONCILIA
--- GENERADO por scripts/gen_dataset.py desde eval/ground_truth.json + eval/dataset_map.md
--- No editar a mano: regenerar. El seed y el ground truth deben moverse juntos.
+-- Ordenes de compra de prueba (Bolivia: NIT sin guiones, montos en Bs, IVA 13%).
+-- Elegidas para ejercitar los cuatro veredictos y todos los checks deterministas.
+-- El caso NO_PO_FOUND se cubre con un NIT que deliberadamente NO esta aqui.
 
-INSERT INTO proveedores (id, nombre, nombre_norm, nit) VALUES
-  (1, 'INDAH GIFT & HOME DECO', 'indah gift & home deco', NULL),
-  (2, 'MR D.I.Y. (JOHOR) SDN BHD', 'mr d.i.y. (johor) sdn bhd', '933109-X'),
-  (3, 'YONGFATT ENTERPRISE', 'yongfatt enterprise', '000849813504'),
-  (4, 'MR D.I.Y. (M) SDN BHD', 'mr d.i.y. (m) sdn bhd', NULL),
-  (5, 'ABC HO TRADING', 'abc ho trading', NULL),
-  (6, 'SOON HUAT MACHINERY ENTERPRISE', 'soon huat machinery enterprise', '002116837376'),
-  (7, 'S.H.H. MOTOR (SUNGAI RENGIT) SDN. BHD.', 's.h.h. motor (sungai rengit) sdn. bhd.', '801580-T'),
-  (8, 'PERNIAGAAN ZHENG HUI', 'perniagaan zheng hui', '000800589824'),
-  (9, 'GERBANG ALAF RESTAURANTS SDN BHD', 'gerbang alaf restaurants sdn bhd', '000504664064'),
-  (10, 'SAM SAM TRADING CO', 'sam sam trading co', '001006288896'),
-  (11, 'AIK HUAT HARDWARE ENTERPRISE (SETIA ALAM) SDN BHD', 'aik huat hardware enterprise (setia alam) sdn bhd', '000394528768'),
-  (12, 'HOME MASTER HARDWARE & ELECTRICAL', 'home master hardware & electrical', '001637511168'),
-  (13, 'RESTORAN HASSANBISTRO', 'restoran hassanbistro', NULL),
-  (14, 'ASIA MART', 'asia mart', '001609584640'),
-  (15, 'LIGHTROOM GALLERY SDN BHD', 'lightroom gallery sdn bhd', '000584089600'),
-  (16, 'SHELL ISNI PETRO TRADING', 'shell isni petro trading', '001090105344'),
-  (17, 'SYL ROASTED DELIGHTS SDN. BHD.', 'syl roasted delights sdn. bhd.', '002046390272'),
-  (18, 'TEO HENG STATIONERY & BOOKS', 'teo heng stationery & books', '000689913856'),
-  (19, 'FUYI MINI MARKET', 'fuyi mini market', '001601310720'),
-  (20, 'MR. D.I.Y. (M) SDN BHD', 'mr. d.i.y. (m) sdn bhd', NULL),
-  (21, '99 SPEED MART S/B', '99 speed mart s/b', '000181747712'),
-  (22, 'C W KHOO HARDWARE SDN BHD', 'c w khoo hardware sdn bhd', '000549584896'),
-  (23, 'Pinturas Monopol Ltda.', 'pinturas monopol ltda.', NULL),
-  (24, 'Distribuidora El Trompillo', 'distribuidora el trompillo', NULL),
-  (25, 'Ferreteria San Martin', 'ferreteria san martin', NULL),
-  (26, 'Panaderia La Espiga', 'panaderia la espiga', NULL);
+SET NAMES utf8mb4;
 
-INSERT INTO gastos_esperados (proveedor_id, fecha, monto, categoria, descripcion) VALUES
-  (2, '2019-01-12', 33.90, 'ferreteria', 'Compra segun comprobante R002'),
-  (3, '2018-12-25', 80.90, 'varios', 'Compra segun comprobante R003'),
-  (5, '2019-01-09', 31.00, 'varios', 'Compra segun comprobante R005'),
-  (6, '2019-01-11', 327.00, 'ferreteria', 'Compra segun comprobante R006'),
-  (11, '2017-06-15', 15.00, 'ferreteria', 'Compra segun comprobante R011'),
-  (12, '2017-12-22', 15.90, 'ferreteria', 'Compra segun comprobante R012'),
-  (13, '2017-12-28', 15.00, 'alimentos', 'Compra segun comprobante R013'),
-  (15, '2017-12-20', 73.00, 'varios', 'Compra segun comprobante R016'),
-  (18, '2018-01-18', 4.90, 'papeleria', 'Compra segun comprobante R019'),
-  (19, '2018-01-25', 9.00, 'alimentos', 'Compra segun comprobante R020'),
-  (18, '2018-01-17', 27.55, 'papeleria', 'Compra segun comprobante R021'),
-  (18, '2018-01-23', 18.00, 'papeleria', 'Compra segun comprobante R023'),
-  (22, '2018-03-01', 21.20, 'ferreteria', 'Compra segun comprobante R027'),
-  (23, '2026-02-11', 639.73, 'ferreteria', 'Compra segun comprobante R028'),
-  (1, '2018-10-19', 60.30, 'varios', 'Compra segun comprobante R001'),
-  (4, '2018-11-18', 30.90, 'ferreteria', 'Compra segun comprobante R004'),
-  (7, '2019-01-23', 20.00, 'combustible', 'Compra segun comprobante R007'),
-  (10, '2017-12-29', 14.10, 'varios', 'Compra segun comprobante R010'),
-  (8, '2018-02-12', 121.46, 'varios', 'Compra segun comprobante R008 (libro con transposicion)'),
-  (9, '2018-01-18', 30.06, 'alimentos', 'Compra segun comprobante R009 (libro con iva_13)'),
-  (14, '2017-12-22', 3.27, 'alimentos', 'Compra segun comprobante R014 (libro con decimal_corrido)'),
-  (16, '2018-03-18', 68.00, 'combustible', 'Compra segun comprobante R017 (libro con transposicion)'),
-  (17, '2018-03-06', 61.59, 'alimentos', 'Compra segun comprobante R018 (libro con iva_13)'),
-  (18, '2018-01-15', 551.00, 'papeleria', 'Compra segun comprobante R022 (libro con decimal_corrido)'),
-  (18, '2018-02-12', 135.35, 'papeleria', 'Compra segun comprobante R024 (libro con transposicion)'),
-  (23, '2026-05-22', 1360.20, 'ferreteria', 'Compra segun comprobante R029 (libro con transposicion)'),
-  (3, '2018-12-25', 80.90, 'varios', 'Cargo repetido del comprobante R003'),
-  (19, '2018-01-25', 9.00, 'alimentos', 'Cargo repetido del comprobante R020'),
-  (18, '2018-01-30', 62.40, 'papeleria', 'Resma papel bond'),
-  (18, '2018-02-20', 19.80, 'papeleria', 'Marcadores permanentes'),
-  (2, '2019-01-28', 45.60, 'ferreteria', 'Focos LED de repuesto'),
-  (14, '2017-12-30', 88.15, 'alimentos', 'Abarrotes fin de mes'),
-  (10, '2018-01-05', 22.30, 'varios', 'Pegamento y cinta'),
-  (12, '2018-01-09', 74.25, 'ferreteria', 'Cable dos hilos'),
-  (21, '2018-02-02', 13.75, 'alimentos', 'Insumos de limpieza'),
-  (24, '2026-03-04', 1240.00, 'varios', 'Pintura latex 20L'),
-  (24, '2026-06-18', 430.50, 'varios', 'Solvente y brochas'),
-  (25, '2026-04-09', 275.00, 'ferreteria', 'Herramienta menor'),
-  (25, '2026-07-02', 918.60, 'ferreteria', 'Andamio alquilado'),
-  (26, '2026-05-15', 85.00, 'alimentos', 'Refrigerio de obra'),
-  (23, '2026-03-27', 512.40, 'ferreteria', 'Compra sin comprobante archivado'),
-  (23, '2026-08-05', 1105.00, 'ferreteria', 'Pedido a cuenta');
+INSERT INTO purchase_orders (id, po_number, supplier_tax_id, supplier_name, currency, total_amount, status, issued_at) VALUES
+    (1, 'OC-101', '4820156023', 'Importadora Santa Cruz SRL',   'BOB',  3390.00, 'OPEN',      '2026-07-02'),
+    (2, 'OC-104', '1029384756', 'Papelera Andina SA',           'BOB',  1243.50, 'RECEIVED',  '2026-07-06'),
+    (3, 'OC-107', '7788990011', 'Ferreteria El Constructor',    'BOB', 12600.00, 'OPEN',      '2026-07-11'),
+    -- El caso del mockup: 20 cajas a Bs 85.00. La factura cobrara 24.
+    (4, 'OC-113', '1023874015', 'Distribuidora del Oriente',    'BOB',  1700.00, 'OPEN',      '2026-07-15'),
+    (5, 'OC-118', '3344556677', 'Transportes Chuquisaca SRL',   'BOB',  5882.50, 'RECEIVED',  '2026-07-19'),
+    (6, 'OC-121', '9911223344', 'Cafe Illimani SRL',            'BOB',   452.00, 'CLOSED',    '2026-07-21'),
+    (7, 'OC-125', '5566778899', 'Metalurgica Potosi SA',        'BOB', 18750.00, 'CANCELLED', '2026-07-24'),
+    (8, 'OC-130', '2233445566', 'Servicios Integrales Beni SRL','BOB',  6400.00, 'OPEN',      '2026-08-03'),
+    -- Segunda orden del mismo proveedor que OC-101: obliga a desambiguar.
+    (9, 'OC-135', '4820156023', 'Importadora Santa Cruz SRL',   'BOB',  5200.00, 'OPEN',      '2026-08-10');
+
+INSERT INTO po_line_items (po_id, description, quantity, unit_price, line_total) VALUES
+    -- OC-101 -> 3390.00 (match exacto)
+    (1, 'Resma papel bond A4',            30.000,   45.00,  1350.00),
+    (1, 'Toner laser negro',               6.000,  340.00,  2040.00),
+    -- OC-104 -> 1243.50 (la factura traera una suma de lineas descuadrada)
+    (2, 'Cuaderno empastado A5',          45.000,   18.50,   832.50),
+    (2, 'Boligrafo azul caja x50',         6.000,   68.50,   411.00),
+    -- OC-107 -> 12600.00 (sobrecargo grande)
+    (3, 'Taladro percutor 800W',          12.000, 1050.00, 12600.00),
+    -- OC-113 -> 1700.00 (mockup: cantidad facturada 24 vs 20 autorizadas)
+    (4, 'Aceite comestible caja x12',     20.000,   85.00,  1700.00),
+    -- OC-118 -> 5882.50 (multi-linea; la factura agrega una linea que no figura)
+    (5, 'Flete Santa Cruz - La Paz',       3.000, 1250.00,  3750.00),
+    (5, 'Flete La Paz - Oruro',            2.000,  620.00,  1240.00),
+    (5, 'Seguro de carga',                 1.000,  692.50,   692.50),
+    (5, 'Gestion aduanera',                1.000,  200.00,   200.00),
+    -- OC-121 -> 452.00 (la factura traera el IVA mal calculado)
+    (6, 'Cafe en grano 1kg',               8.000,   56.50,   452.00),
+    -- OC-125 -> 18750.00 (orden CANCELADA: cobrar contra ella es un problema)
+    (7, 'Perfil de acero 6m',             25.000,  750.00, 18750.00),
+    -- OC-130 -> 6400.00 (subcobro)
+    (8, 'Mantenimiento HVAC mensual',      4.000, 1600.00,  6400.00),
+    -- OC-135 -> 5200.00
+    (9, 'Archivador metalico 4 gavetas',   8.000,  650.00,  5200.00);
