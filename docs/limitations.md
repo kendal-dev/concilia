@@ -93,6 +93,24 @@ numero de factura.
 El detector hace lo que promete y nada mas. Vale la pena decirlo en voz alta porque es
 facil confundir "verificado contra la fuente" con "correcto".
 
+**Y el caso espejo, que es mas incomodo.** `R003` termina en `MATCH`, y el veredicto es
+el que el oraculo esperaba. Pero el detector marca los tres importes como no hallados:
+
+```
+Extraido:  total 80.91   subtotal 80.90   tax 0.01
+OCR:       el unico importe con decimales que el OCR devolvio es "100.00"
+```
+
+O el modelo produjo tres numeros correctos que no leyo de la imagen, o el OCR perdio la
+linea del total y el detector no tiene con que contrastar. No sabemos cual de las dos, y
+esa es justamente la respuesta honesta.
+
+Lo que si deja claro es que **el detector aporta senal que el veredicto no tiene**: aca
+el dictamen dice "coincide" y la procedencia dice "no puedo confirmar de donde salio ese
+numero". Que la capa de verificacion sea mas conservadora que el veredicto es la
+direccion correcta del error, y es la razon por la que la evidencia se muestra al lado
+del dictamen en vez de resumirse en un semaforo.
+
 ---
 
 ## 4. Documentos girados: se rescatan, pero se pagan
