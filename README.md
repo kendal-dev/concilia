@@ -143,7 +143,7 @@ operador ve `total_amount 639,73 ✓ está en el OCR 1.0` al lado de un
 **Lo que prueba y lo que no:** verifica *procedencia*, no *corrección*. Un número de
 factura leído de la línea de la dirección existe en el texto y aun así es el campo
 equivocado. Descarta la alucinación, no el error de interpretación. Hay un caso real de
-esto documentado en [limitations.md](docs/limitations.md#3).
+esto documentado en [limitations.md](docs/limitations.md#3-source_span-prueba-procedencia-no-correccion).
 
 ### Escalada por rotación
 
@@ -177,7 +177,7 @@ auto-aprueba** — no verificar no es lo mismo que verificar con éxito.
 Eso tiene una consecuencia medida y vale la pena decirla: en los 31 documentos reales
 **ninguno se auto-aprobó**. Los tickets de punto de venta no traen desglose legible, así
 que `suma de líneas` e `impuestos` quedan en `SKIPPED` y la puerta no se abre. Está
-explicado en [limitations.md](docs/limitations.md#9).
+explicado en [limitations.md](docs/limitations.md#8-la-auto-aprobacion-no-se-disparo-ni-una-vez).
 
 ### Política de auto-aprobación
 
