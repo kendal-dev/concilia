@@ -45,9 +45,13 @@ try:
 except Exception:
     def _pkgver(n):
         return "?"
+# Los que requirements.txt declara de verdad. `rich` y `numpy` estaban aca de una
+# version anterior: no los declara nadie, llegan de arrastre con streamlit, y un
+# preflight que verifica dependencias que el proyecto no pide no verifica nada.
 for mod, pkg in [("tetherto.qvac_sdk", "tetherto-qvac-sdk"), ("pymysql", "pymysql"),
-                 ("dotenv", "python-dotenv"), ("rich", "rich"),
-                 ("PIL", "pillow"), ("numpy", "numpy")]:
+                 ("dotenv", "python-dotenv"), ("PIL", "pillow"),
+                 ("fastapi", "fastapi"), ("sqlalchemy", "sqlalchemy"),
+                 ("pydantic", "pydantic"), ("streamlit", "streamlit")]:
     try:
         __import__(mod)
         try:
@@ -131,16 +135,24 @@ try:
                            password=os.environ.get("DB_PASSWORD", "concilia"),
                            database=os.environ.get("DB_NAME", "concilia"),
                            charset="utf8mb4", connect_timeout=4)
+    ESPERADAS = {"purchase_orders", "po_line_items", "invoices", "reconciliations"}
     with conn.cursor() as cur:
         cur.execute("SHOW TABLES")
-        tablas = [r[0] for r in cur.fetchall()]
-        n = 0
-        if "gastos_esperados" in tablas:
-            cur.execute("SELECT COUNT(*) FROM gastos_esperados")
-            n = cur.fetchone()[0]
+        tablas = {r[0] for r in cur.fetchall()}
+        ordenes = 0
+        if "purchase_orders" in tablas:
+            cur.execute("SELECT COUNT(*) FROM purchase_orders")
+            ordenes = cur.fetchone()[0]
     conn.close()
-    mark("OK" if len(tablas) >= 3 else "WARN", "MariaDB",
-         f"tablas={tablas} gastos_esperados={n}")
+    faltan = ESPERADAS - tablas
+    if faltan:
+        mark("FAIL", "MariaDB", f"faltan tablas: {sorted(faltan)}. "
+             "Corre: docker compose down -v && docker compose up -d")
+    elif ordenes == 0:
+        mark("WARN", "MariaDB", "las tablas estan pero el seed no cargo. "
+             "El init solo corre sobre un volumen vacio: docker compose down -v")
+    else:
+        mark("OK", "MariaDB", f"{len(tablas)} tablas, {ordenes} ordenes de compra")
 except Exception as e:
     mark("WARN", "MariaDB", f"sin conexion: {type(e).__name__} (esperado si corre en otra maquina)")
 
@@ -190,4 +202,4 @@ print(f"OK={RES['OK']}  WARN={RES['WARN']}  FAIL={RES['FAIL']}")
 if RES["FAIL"]:
     print("\nHay [FAIL]: arreglalos antes de correr probe.py.")
     sys.exit(1)
-print("\nEntorno apto. Siguiente:  python docs\\environment\\probe.py > docs\\environment\\probe_out.txt 2>&1")
+print("\nEntorno apto. Siguiente:  python scripts/setup_models.py   (descarga los modelos)")
