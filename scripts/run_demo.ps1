@@ -101,24 +101,38 @@ if ($SinCalentar) {
 } elseif (-not (Test-Path $Recibo)) {
     Aviso "no encuentro $Recibo; omito el precalentamiento"
 } else {
-    # La ruta no se hardcodea: se descubre del contrato OpenAPI, asi el script no
-    # se rompe si el backend renombra el endpoint. /reconcile es solo el respaldo.
-    $ruta = $null; $campo = $null
+    # La ruta conocida es /reconcile. Se confirma contra el contrato OpenAPI en vez
+    # de confiar en ella a ciegas, y si el backend la renombro se busca la que
+    # reciba un archivo. Descubrir primero y usar /reconcile de respaldo era al
+    # reves: cualquier tropiezo del parseo imprimia un aviso en amarillo sobre un
+    # arranque que en realidad iba bien.
+    $ruta = "/reconcile"; $campo = "file"
     try {
         $spec = Invoke-RestMethod "$BASE/openapi.json" -TimeoutSec 10
+        $candidatas = @()
         foreach ($p in $spec.paths.PSObject.Properties) {
             $post = $p.Value.post
             if (-not $post -or -not $post.requestBody) { continue }
-            if ($post.requestBody.content.PSObject.Properties.Name -notcontains "multipart/form-data") { continue }
-            $ref = $post.requestBody.content."multipart/form-data".schema.'$ref'
-            if (-not $ref) { continue }
-            $esquema = $spec.components.schemas.(($ref -split "/")[-1])
+            $tipos = $post.requestBody.content.PSObject.Properties.Name
+            if ($tipos -notcontains "multipart/form-data") { continue }
+            $esquema = $post.requestBody.content."multipart/form-data".schema
+            if ($esquema.'$ref') {
+                $nombre = ($esquema.'$ref' -split "/")[-1]
+                $esquema = $spec.components.schemas.$nombre
+            }
             $bin = $esquema.properties.PSObject.Properties |
                    Where-Object { $_.Value.format -eq "binary" } | Select-Object -First 1
-            if ($bin) { $ruta = $p.Name; $campo = $bin.Name; break }
+            if ($bin) { $candidatas += [pscustomobject]@{ Ruta = $p.Name; Campo = $bin.Name } }
         }
-    } catch { Aviso "no pude leer /openapi.json: $($_.Exception.Message)" }
-    if (-not $ruta) { $ruta = "/reconcile"; $campo = "file"; Aviso "uso el respaldo $ruta / '$campo'" }
+        $elegida = $candidatas | Where-Object { $_.Ruta -eq $ruta } | Select-Object -First 1
+        if (-not $elegida) { $elegida = $candidatas | Select-Object -First 1 }
+        if ($elegida) {
+            if ($elegida.Ruta -ne $ruta) { Aviso "el endpoint se llama $($elegida.Ruta), no $ruta" }
+            $ruta = $elegida.Ruta; $campo = $elegida.Campo
+        } else {
+            Nota "el contrato no declaro ninguna subida; uso $ruta / '$campo'"
+        }
+    } catch { Nota "no pude leer /openapi.json; uso $ruta / '$campo'" }
 
     Nota "POST $ruta (campo '$campo') con $Recibo"
     Nota "la primera vez tarda ~78 s: es la carga de los tres modelos"
