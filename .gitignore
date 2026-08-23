@@ -6,5 +6,8 @@ venv/
 .pytest_cache/
 *.egg-info/
 storage/
+logs/
 node_modules/
 .qvac_cache/
+*.gguf
+dummy.jpg

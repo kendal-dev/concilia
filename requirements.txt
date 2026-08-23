@@ -1,11 +1,23 @@
+# Inferencia local — QVAC. Es la capa obligatoria del hackathon.
+tetherto-qvac-sdk==0.17.1
+bare-rpc==0.0.1
+compact-encoding==0.0.1
+pillow==12.3.0
+
+# Backend
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
-sqlalchemy==2.0.36
-pymysql==1.1.1
-pydantic==2.10.4
-pydantic-settings==2.7.0
 python-multipart==0.0.20
-pytest==8.3.4
-httpx==0.28.1
+sqlalchemy==2.0.52
+pymysql==1.2.0
+pydantic==2.13.4
+pydantic-settings==2.7.0
+python-dotenv==1.2.3
+requests==2.34.2
+
+# Frontend
 streamlit==1.41.1
-requests==2.32.3
+
+# Tests
+pytest==9.1.1
+httpx==0.28.1

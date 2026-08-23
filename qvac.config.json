@@ -1,9 +1,0 @@
-{
-  "models": {
-    "qvac/VisionPsy-Nano-460M-Flash": {
-      "type": "gguf",
-      "source": "hf://qvac/VisionPsy-Nano-460M-Flash-GGUFs"
-    }
-  },
-  "cache_dir": "./.qvac_cache"
-}
