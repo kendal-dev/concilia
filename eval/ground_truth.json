@@ -1,0 +1,600 @@
+[
+  {
+    "receipt_id": "R001",
+    "source_image": "data/receipts/R001.jpg",
+    "vendor": "INDAH GIFT & HOME DECO",
+    "nit": null,
+    "date": "2018-10-19",
+    "total": 60.3,
+    "currency": "MYR",
+    "n_items": 2,
+    "doc_type": "recibo",
+    "condicion": [
+      "termico_descolorido"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH|UNCERTAIN",
+    "nota_evaluacion": "calidad degradada: UNCERTAIN tambien es acierto",
+    "notas_anotador": "Impresion termica en tono azul levemente desvanecida"
+  },
+  {
+    "receipt_id": "R002",
+    "source_image": "data/receipts/R002.jpg",
+    "vendor": "MR D.I.Y. (JOHOR) SDN BHD",
+    "nit": "933109-X",
+    "date": "2019-01-12",
+    "total": 33.9,
+    "currency": "MYR",
+    "n_items": 4,
+    "doc_type": "factura",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": ""
+  },
+  {
+    "receipt_id": "R003",
+    "source_image": "data/receipts/R003.jpg",
+    "vendor": "YONGFATT ENTERPRISE",
+    "nit": "000849813504",
+    "date": "2018-12-25",
+    "total": 80.9,
+    "currency": "MYR",
+    "n_items": 1,
+    "doc_type": "factura",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": ""
+  },
+  {
+    "receipt_id": "R004",
+    "source_image": "data/receipts/R004.jpg",
+    "vendor": "MR D.I.Y. (M) SDN BHD",
+    "nit": null,
+    "date": "2018-11-18",
+    "total": 30.9,
+    "currency": "MYR",
+    "n_items": 5,
+    "doc_type": "factura",
+    "condicion": [
+      "termico_descolorido",
+      "sombra"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH|UNCERTAIN",
+    "nota_evaluacion": "calidad degradada: UNCERTAIN tambien es acierto",
+    "notas_anotador": "Impresion termica desvanecida en azul con sombra de fondo"
+  },
+  {
+    "receipt_id": "R005",
+    "source_image": "data/receipts/R005.jpg",
+    "vendor": "ABC HO TRADING",
+    "nit": null,
+    "date": "2019-01-09",
+    "total": 31.0,
+    "currency": "MYR",
+    "n_items": 1,
+    "doc_type": "recibo",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": ""
+  },
+  {
+    "receipt_id": "R006",
+    "source_image": "data/receipts/R006.jpg",
+    "vendor": "SOON HUAT MACHINERY ENTERPRISE",
+    "nit": "002116837376",
+    "date": "2019-01-11",
+    "total": 327.0,
+    "currency": "MYR",
+    "n_items": 8,
+    "doc_type": "nota_venta",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": ""
+  },
+  {
+    "receipt_id": "R007",
+    "source_image": "data/receipts/R007.jpg",
+    "vendor": "S.H.H. MOTOR (SUNGAI RENGIT) SDN. BHD.",
+    "nit": "801580-T",
+    "date": "2019-01-23",
+    "total": 20.0,
+    "currency": "MYR",
+    "n_items": 1,
+    "doc_type": "factura",
+    "condicion": [
+      "termico_descolorido"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH|UNCERTAIN",
+    "nota_evaluacion": "calidad degradada: UNCERTAIN tambien es acierto",
+    "notas_anotador": "Impresion termica de bajo contraste, tinta gris clara"
+  },
+  {
+    "receipt_id": "R008",
+    "source_image": "data/receipts/R008.jpg",
+    "vendor": "PERNIAGAAN ZHENG HUI",
+    "nit": "000800589824",
+    "date": "2018-02-12",
+    "total": 112.46,
+    "currency": "MYR",
+    "n_items": 5,
+    "doc_type": "factura",
+    "condicion": [
+      "borroso",
+      "torcido"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MISMATCH",
+    "nota_evaluacion": "libro alterado por transposicion",
+    "notas_anotador": "Escaneo con ruido de fondo y leve inclinacion"
+  },
+  {
+    "receipt_id": "R009",
+    "source_image": "data/receipts/R009.jpg",
+    "vendor": "GERBANG ALAF RESTAURANTS SDN BHD",
+    "nit": "000504664064",
+    "date": "2018-01-18",
+    "total": 26.6,
+    "currency": "MYR",
+    "n_items": 4,
+    "doc_type": "factura",
+    "condicion": [
+      "manuscrito",
+      "sombra"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MISMATCH",
+    "nota_evaluacion": "libro alterado por iva_13",
+    "notas_anotador": "Anotacion manuscrita en rojo superpuesta arriba"
+  },
+  {
+    "receipt_id": "R010",
+    "source_image": "data/receipts/R010.jpg",
+    "vendor": "SAM SAM TRADING CO",
+    "nit": "001006288896",
+    "date": "2017-12-29",
+    "total": 14.1,
+    "currency": "MYR",
+    "n_items": 2,
+    "doc_type": "factura",
+    "condicion": [
+      "termico_descolorido",
+      "sombra"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH|UNCERTAIN",
+    "nota_evaluacion": "calidad degradada: UNCERTAIN tambien es acierto",
+    "notas_anotador": "Manchas circulares y caracteres borrosos por desgaste termico"
+  },
+  {
+    "receipt_id": "R011",
+    "source_image": "data/receipts/R011.jpg",
+    "vendor": "AIK HUAT HARDWARE ENTERPRISE (SETIA ALAM) SDN BHD",
+    "nit": "000394528768",
+    "date": "2017-06-15",
+    "total": 15.0,
+    "currency": "MYR",
+    "n_items": 1,
+    "doc_type": "factura",
+    "condicion": [
+      "recortado",
+      "sombra"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": "Borde superior rasgado y mancha rojiza"
+  },
+  {
+    "receipt_id": "R012",
+    "source_image": "data/receipts/R012.jpg",
+    "vendor": "HOME MASTER HARDWARE & ELECTRICAL",
+    "nit": "001637511168",
+    "date": "2017-12-22",
+    "total": 15.9,
+    "currency": "MYR",
+    "n_items": 1,
+    "doc_type": "factura",
+    "condicion": [
+      "borroso"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": "Texto con efecto de doble impresion"
+  },
+  {
+    "receipt_id": "R013",
+    "source_image": "data/receipts/R013.jpg",
+    "vendor": "RESTORAN HASSANBISTRO",
+    "nit": null,
+    "date": "2017-12-28",
+    "total": 15.0,
+    "currency": "MYR",
+    "n_items": 1,
+    "doc_type": "factura",
+    "condicion": [
+      "borroso"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": "Lineas de direccion borrosas"
+  },
+  {
+    "receipt_id": "R014",
+    "source_image": "data/receipts/R014.jpg",
+    "vendor": "ASIA MART",
+    "nit": "001609584640",
+    "date": "2017-12-22",
+    "total": 32.7,
+    "currency": "MYR",
+    "n_items": 9,
+    "doc_type": "factura",
+    "condicion": [
+      "sombra",
+      "termico_descolorido"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MISMATCH",
+    "nota_evaluacion": "libro alterado por decimal_corrido",
+    "notas_anotador": "Mancha circular sobre el detalle"
+  },
+  {
+    "receipt_id": "R015",
+    "source_image": "data/receipts/R015.jpg",
+    "vendor": "LIGHTROOM GALLERY SDN BHD",
+    "nit": "000584089600",
+    "date": "2017-11-20",
+    "total": 39.8,
+    "currency": "MYR",
+    "n_items": 2,
+    "doc_type": "otro",
+    "condicion": [
+      "torcido",
+      "sombra"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "NO_MATCH",
+    "nota_evaluacion": "sin registro en el libro",
+    "notas_anotador": "Nota de credito, no factura; imagen inclinada"
+  },
+  {
+    "receipt_id": "R016",
+    "source_image": "data/receipts/R016.jpg",
+    "vendor": "LIGHTROOM GALLERY SDN BHD",
+    "nit": "000584089600",
+    "date": "2017-12-20",
+    "total": 73.0,
+    "currency": "MYR",
+    "n_items": 2,
+    "doc_type": "factura",
+    "condicion": [
+      "sombra"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": "Leve transparencia de texto en margen derecho"
+  },
+  {
+    "receipt_id": "R017",
+    "source_image": "data/receipts/R017.jpg",
+    "vendor": "SHELL ISNI PETRO TRADING",
+    "nit": "001090105344",
+    "date": "2018-03-18",
+    "total": 86.0,
+    "currency": "MYR",
+    "n_items": 1,
+    "doc_type": "recibo",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MISMATCH",
+    "nota_evaluacion": "libro alterado por transposicion",
+    "notas_anotador": "Ticket de surtidor"
+  },
+  {
+    "receipt_id": "R018",
+    "source_image": "data/receipts/R018.jpg",
+    "vendor": "SYL ROASTED DELIGHTS SDN. BHD.",
+    "nit": "002046390272",
+    "date": "2018-03-06",
+    "total": 54.5,
+    "currency": "MYR",
+    "n_items": 5,
+    "doc_type": "ticket",
+    "condicion": [
+      "limpio",
+      "manuscrito"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MISMATCH",
+    "nota_evaluacion": "libro alterado por iva_13",
+    "notas_anotador": "Anotacion manuscrita arriba"
+  },
+  {
+    "receipt_id": "R019",
+    "source_image": "data/receipts/R019.jpg",
+    "vendor": "TEO HENG STATIONERY & BOOKS",
+    "nit": "000689913856",
+    "date": "2018-01-18",
+    "total": 4.9,
+    "currency": "MYR",
+    "n_items": 2,
+    "doc_type": "factura",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": "Sello rojo sobre el encabezado"
+  },
+  {
+    "receipt_id": "R020",
+    "source_image": "data/receipts/R020.jpg",
+    "vendor": "FUYI MINI MARKET",
+    "nit": "001601310720",
+    "date": "2018-01-25",
+    "total": 9.0,
+    "currency": "MYR",
+    "n_items": 1,
+    "doc_type": "factura",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": "Sello rojo sobre el encabezado"
+  },
+  {
+    "receipt_id": "R021",
+    "source_image": "data/receipts/R021.jpg",
+    "vendor": "TEO HENG STATIONERY & BOOKS",
+    "nit": "000689913856",
+    "date": "2018-01-17",
+    "total": 27.55,
+    "currency": "MYR",
+    "n_items": 1,
+    "doc_type": "factura",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": "Sello PAID sobre el total"
+  },
+  {
+    "receipt_id": "R022",
+    "source_image": "data/receipts/R022.jpg",
+    "vendor": "TEO HENG STATIONERY & BOOKS",
+    "nit": "000689913856",
+    "date": "2018-01-15",
+    "total": 55.1,
+    "currency": "MYR",
+    "n_items": 2,
+    "doc_type": "factura",
+    "condicion": [
+      "arrugado"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MISMATCH",
+    "nota_evaluacion": "libro alterado por decimal_corrido",
+    "notas_anotador": "Esquina doblada y sello PAID"
+  },
+  {
+    "receipt_id": "R023",
+    "source_image": "data/receipts/R023.jpg",
+    "vendor": "TEO HENG STATIONERY & BOOKS",
+    "nit": "000689913856",
+    "date": "2018-01-23",
+    "total": 18.0,
+    "currency": "MYR",
+    "n_items": 2,
+    "doc_type": "factura",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": "Sello PAID sobre el total"
+  },
+  {
+    "receipt_id": "R024",
+    "source_image": "data/receipts/R024.jpg",
+    "vendor": "TEO HENG STATIONERY & BOOKS",
+    "nit": "000689913856",
+    "date": "2018-02-12",
+    "total": 153.35,
+    "currency": "MYR",
+    "n_items": 6,
+    "doc_type": "factura",
+    "condicion": [
+      "sombra"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MISMATCH",
+    "nota_evaluacion": "libro alterado por transposicion",
+    "notas_anotador": "Sombra de escaneo en margen izquierdo"
+  },
+  {
+    "receipt_id": "R025",
+    "source_image": "data/receipts/R025.jpg",
+    "vendor": "MR. D.I.Y. (M) SDN BHD",
+    "nit": null,
+    "date": "2018-03-14",
+    "total": 37.1,
+    "currency": "MYR",
+    "n_items": 3,
+    "doc_type": "factura",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "NO_MATCH",
+    "nota_evaluacion": "sin registro en el libro",
+    "notas_anotador": "Ruido de grano de escaneo"
+  },
+  {
+    "receipt_id": "R026",
+    "source_image": "data/receipts/R026.jpg",
+    "vendor": "99 SPEED MART S/B",
+    "nit": "000181747712",
+    "date": "2018-01-24",
+    "total": 2.5,
+    "currency": "MYR",
+    "n_items": 2,
+    "doc_type": "factura",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "NO_MATCH",
+    "nota_evaluacion": "sin registro en el libro",
+    "notas_anotador": "Sello PAID tapa parte del encabezado"
+  },
+  {
+    "receipt_id": "R027",
+    "source_image": "data/receipts/R027.jpg",
+    "vendor": "C W KHOO HARDWARE SDN BHD",
+    "nit": "000549584896",
+    "date": "2018-03-01",
+    "total": 21.2,
+    "currency": "MYR",
+    "n_items": 1,
+    "doc_type": "factura",
+    "condicion": [
+      "limpio"
+    ],
+    "legible_humano": true,
+    "origen": "sroie",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": ""
+  },
+  {
+    "receipt_id": "R028",
+    "source_image": "data/receipts/R028.jpg",
+    "vendor": "Pinturas Monopol Ltda.",
+    "nit": null,
+    "date": "2026-02-11",
+    "total": 639.73,
+    "currency": "BOB",
+    "n_items": 0,
+    "doc_type": "factura",
+    "condicion": [
+      "torcido"
+    ],
+    "legible_humano": true,
+    "origen": "boliviano_real",
+    "veredicto_esperado": "MATCH",
+    "nota_evaluacion": "par exacto en el libro",
+    "notas_anotador": "Foto girada 90 grados; sin desglose de items"
+  },
+  {
+    "receipt_id": "R029",
+    "source_image": "data/receipts/R029.jpg",
+    "vendor": "Pinturas Monopol Ltda.",
+    "nit": null,
+    "date": "2026-05-22",
+    "total": 1630.2,
+    "currency": "BOB",
+    "n_items": 0,
+    "doc_type": "factura",
+    "condicion": [
+      "torcido"
+    ],
+    "legible_humano": true,
+    "origen": "boliviano_real",
+    "veredicto_esperado": "MISMATCH",
+    "nota_evaluacion": "libro alterado por transposicion",
+    "notas_anotador": "Foto girada 90 grados; sin desglose de items"
+  },
+  {
+    "receipt_id": "R030",
+    "source_image": "data/receipts/R030.jpg",
+    "vendor": "Pinturas Monopol Ltda.",
+    "nit": null,
+    "date": "2026-07-30",
+    "total": 817.95,
+    "currency": "BOB",
+    "n_items": 0,
+    "doc_type": "factura",
+    "condicion": [
+      "torcido",
+      "termico_descolorido"
+    ],
+    "legible_humano": true,
+    "origen": "boliviano_real",
+    "veredicto_esperado": "NO_MATCH",
+    "nota_evaluacion": "sin registro en el libro",
+    "notas_anotador": "Foto girada 90 grados con impresion tenue"
+  },
+  {
+    "receipt_id": "R031",
+    "source_image": "data/receipts/R031.jpg",
+    "vendor": "Pinturas Monopol Ltda.",
+    "nit": null,
+    "date": "2026-01-07",
+    "total": 689.79,
+    "currency": "BOB",
+    "n_items": 0,
+    "doc_type": "factura",
+    "condicion": [
+      "torcido"
+    ],
+    "legible_humano": true,
+    "origen": "boliviano_real",
+    "veredicto_esperado": "NO_MATCH",
+    "nota_evaluacion": "sin registro en el libro",
+    "notas_anotador": "Foto girada 90 grados con clip metalico sobre el papel"
+  }
+]

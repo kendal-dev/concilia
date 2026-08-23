@@ -1,0 +1,38 @@
+{
+  "receipt_id": "F001",
+  "source_image": "data/receipts/F001.jpg",
+  "ocr": {
+    "raw_text": "FARMAC1A CRUZ\nNIT 123456\n14/08/2026\nTOTAL  Bs 247.50\nGRACIAS POR SU COMPRA",
+    "engine": "qvac-ocr",
+    "route": "ocr",
+    "duration_s": 1.0,
+    "quality_flags": []
+  },
+  "extracted": {
+    "vendor": {
+      "value": "Farmacia Cruz",
+      "confidence": 0.9,
+      "source_span": "Farmacia Cruz"
+    },
+    "date": {
+      "value": "2026-08-14",
+      "confidence": 0.9,
+      "source_span": "14/08/2026"
+    },
+    "total": {
+      "value": 247.5,
+      "confidence": 0.9,
+      "source_span": "TOTAL  Bs 247.50"
+    },
+    "currency": {
+      "value": "BOB",
+      "confidence": 0.99,
+      "source_span": "Bs"
+    },
+    "items": [],
+    "parser_repairs": []
+  },
+  "reconciliation": {},
+  "confidence_overall": 0.0,
+  "latency_s": 0.0
+}
