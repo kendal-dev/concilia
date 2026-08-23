@@ -27,9 +27,17 @@ def session():
 
 
 def test_el_seed_cargo(session):
+    """Verifica que el seed base este, no cuantas ordenes hay en total.
+
+    El conteo exacto era 9 cuando el seed solo tenia el caso del mockup. Desde que
+    scripts/gen_seed_erp.py agrega una orden por cada recibo real del dataset, el
+    total se mueve cada vez que crece data/receipts/ - y un test que se rompe al
+    agregar datos no esta protegiendo nada.
+    """
     ordenes = list_purchase_orders(session)
-    assert len(ordenes) == 9
-    assert {o.po_number for o in ordenes} >= {"OC-101", "OC-130"}
+    numeros = {o.po_number for o in ordenes}
+    assert numeros >= {"OC-101", "OC-113", "OC-130"}, "falta el seed base del mockup"
+    assert len(ordenes) >= 9
 
 
 def test_los_montos_llegan_como_decimal(session):

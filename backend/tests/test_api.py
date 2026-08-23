@@ -30,6 +30,14 @@ def reconciliacion(client) -> dict:
     r = client.post(
         "/reconcile",
         files={"file": ("factura_oriente.jpg", b"imagen-de-prueba", "image/jpeg")},
+        # Motor determinista explicito. Estos tests verifican el ORQUESTADOR - las
+        # fases, los checks, el veredicto, la persistencia - no la calidad de la
+        # inferencia. Sin este override toman el LLM_CLIENT del .env: con
+        # LLM_CLIENT=qvac, el OCR corre de verdad sobre `b"imagen-de-prueba"`, que
+        # no es una imagen, devuelve UNCERTAIN con razon, y el test falla por algo
+        # que no esta probando. La calidad del motor real se mide en eval/, contra
+        # los 31 recibos y su ground truth.
+        data={"llm_client": "stub"},
     )
     assert r.status_code == 200
     return r.json()
