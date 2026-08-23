@@ -1,20 +1,26 @@
 services:
-  db:
+  mariadb:
     image: mariadb:11
     container_name: concilia-db
+    restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: concilia
-      MARIADB_DATABASE: concilia
-      MARIADB_USER: concilia
-      MARIADB_PASSWORD: concilia
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-concilia}
+      MARIADB_DATABASE: ${DB_NAME:-concilia}
+      MARIADB_USER: ${DB_USER:-concilia}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-concilia}
     ports:
-      - "3307:3306"
+      - "${DB_PORT:-3307}:3306"
     volumes:
-      - ./db/schema.sql:/docker-entrypoint-initdb.d/00-schema.sql
-      - ./db/seed.sql:/docker-entrypoint-initdb.d/01-seed.sql
-    command: --innodb-buffer-pool-size=128M
+      - mariadb_data:/var/lib/mysql
+      # Se ejecutan en orden alfabetico, solo en el primer arranque (volumen vacio).
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
       timeout: 5s
       retries: 12
+      start_period: 20s
+
+volumes:
+  mariadb_data:
