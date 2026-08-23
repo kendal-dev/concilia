@@ -14,10 +14,16 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Streamlit corre en 8501 y consume esta API por HTTP.
+# Streamlit, el frontend Vite y la aplicación Tauri consumen esta API local.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8501", "http://127.0.0.1:8501"],
+    allow_origins=[
+        "http://localhost:8501",
+        "http://127.0.0.1:8501",
+        "http://tauri.localhost",
+        "https://tauri.localhost",
+        "tauri://localhost",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )

@@ -1,0 +1,42 @@
+{
+  "name": "frontend-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build:tauri": "tsc -b && vite build --outDir dist",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build"
+  },
+  "dependencies": {
+    "@fontsource/bodoni-moda": "^5.3.0",
+    "@fontsource/manrope": "^5.3.0",
+    "@fontsource/marcellus": "^5.3.0",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@react-three/fiber": "^9.7.0",
+    "@tanstack/react-query": "^5.101.4",
+    "@tauri-apps/api": "^2.11.1",
+    "lucide-react": "^1.33.0",
+    "motion": "^13.1.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-dropzone": "^20.1.1",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.185.4",
+    "@vitejs/plugin-react": "^6.0.4",
+    "oxlint": "^1.75.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.0"
+  }
+}
