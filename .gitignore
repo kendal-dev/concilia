@@ -1,5 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
 venv/
 .env
-__pycache__/
-.qvac_cache/
+.pytest_cache/
+*.egg-info/
+storage/
 node_modules/
+.qvac_cache/
