@@ -91,6 +91,29 @@ CSS = """
   .chk-warn { color: var(--alerta); }
   .chk-fail { color: var(--error); }
   .chk-skip { color: var(--tenue); }
+
+  /* --- procedencia ---
+     Cada valor que el modelo dijo haber leido, buscado dentro del texto crudo
+     que produjo el OCR. Un valor que no aparece ahi es un valor inventado. */
+  .proc-tit {
+    color: var(--tenue); font-size: 0.9rem; margin: 0.7rem 0 0.35rem;
+  }
+  .proc-fila {
+    display: flex; align-items: baseline; gap: 0.7rem;
+    padding: 0.22rem 0; border-bottom: 1px solid #1c1c1c; font-size: 0.92rem;
+  }
+  .proc-campo {
+    color: var(--tenue); font-family: ui-monospace, monospace; min-width: 9.5rem;
+  }
+  .proc-valor { color: var(--texto); font-variant-numeric: tabular-nums; }
+  .proc-marca { margin-left: auto; white-space: nowrap; }
+  .proc-si { color: var(--ok); }
+  .proc-no { color: var(--error); font-weight: 500; }
+  .proc-sim { color: #5a5a5a; font-size: 0.82rem; margin-left: 0.4rem; }
+  .proc-meta {
+    color: #6a6a6a; font-size: 0.85rem; font-family: ui-monospace, monospace;
+    margin: 0.15rem 0 0.4rem;
+  }
 </style>
 """
 

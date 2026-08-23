@@ -183,7 +183,29 @@ que el caso de uso sugiere.
 
 ---
 
-## 8. Lo que no se probo
+## 8. La auto-aprobacion no se disparo ni una vez
+
+En los 31 documentos, `auto_approved` es **false en los 31**. No es un bug: es la
+politica funcionando como se diseno.
+
+`all_clear()` exige que **todos** los checks esten en `PASS`, y un `SKIPPED` no
+cuenta como aprobado. En tickets de punto de venta el desglose por linea no se lee
+de forma confiable (seccion 6), asi que `suma de lineas` e `impuestos` quedan en
+`SKIPPED` casi siempre. Con eso la puerta nunca se abre.
+
+La alternativa habria sido tratar `SKIPPED` como aprobado. Eso auto-aprobaria
+facturas cuya aritmetica interna nunca se verifico, que es exactamente el pago que
+esta funcion existe para no dejar pasar. **No verificar no es lo mismo que verificar
+con exito**, y en conciliacion de pagos esa distincion es la funcion entera.
+
+Lo que si significa en la practica: sobre este dataset, el agente triajea y ordena
+la cola, pero no descarga trabajo automaticamente. Para que lo haga harian falta
+facturas con desglose legible — que es el caso de las bolivianas de proveedor
+formal, no el de los tickets de comercio.
+
+---
+
+## 9. Lo que no se probo
 
 - **Backend Vulkan.** Toda la corrida es en CPU. El addon soporta `vulkan` y la
   maquina tiene una RTX 4070, pero no se midio el efecto en latencia ni se verifico

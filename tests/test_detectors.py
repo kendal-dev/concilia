@@ -1,14 +1,13 @@
 """Tests de los detectores de honestidad.
 
 Estos detectores son los que deciden si el agente puede confiar en lo que leyo:
-verifican que cada valor extraido exista de verdad en el texto crudo del OCR, y que
-la aritmetica del documento cierre. Los usa `backend/core/llm/qvac.py` en cada
+verifican que cada valor extraido exista de verdad en el texto crudo del OCR.
+Los usa `backend/core/llm/qvac.py` en cada
 extraccion; corren sin OCR, sin modelo y sin base de datos.
 """
 import pytest
 
 from confidence.detectors import (
-    coherencia_aritmetica,
     span_verificado,
     valor_aparece,
     variantes_numero,
@@ -68,26 +67,3 @@ def test_span_no_tolera_invencion():
 
 def test_texto_vacio_no_verifica_nada():
     assert valor_aparece(33.9, "", es_numero=True)[0] is False
-
-
-# ------------------------------------------------------ coherencia aritmetica
-def test_sin_items_el_detector_no_aplica():
-    """Un taxi o un puesto de mercado no traen desglose. Penalizarlos seria
-    inventar incertidumbre donde no la hay."""
-    assert coherencia_aritmetica([], 100.0) == ("no_aplica", None)
-
-
-def test_detecta_desvio_real():
-    items = [{"qty": 2, "unit_price": 10.0}, {"qty": 1, "unit_price": 5.0}]
-    estado, delta = coherencia_aritmetica(items, 100.0)
-    assert estado == "desvia" and delta == -75.0
-
-
-def test_tolera_un_boliviano_de_redondeo():
-    assert coherencia_aritmetica([{"qty": 2, "unit_price": 10.0}], 20.5)[0] == "ok"
-
-
-def test_items_sin_importes_legibles_no_aplican():
-    """Si el OCR no pudo leer cantidades ni precios, no hay nada que sumar."""
-    items = [{"desc": "algo", "qty": None, "unit_price": None}]
-    assert coherencia_aritmetica(items, 50.0)[0] == "no_aplica"

@@ -120,8 +120,10 @@ primero, modelo de texto después. El motivo no es de rendimiento sino de audita
 intermedio que mostrarle a un humano, y no hay contra qué verificar si el modelo
 inventó un número.
 
-Ese texto queda guardado por documento en `logs/runs/<recibo>.json`, junto con la traza
-por fases.
+Ese texto no se queda en un archivo: el dashboard lo muestra dentro de **«Cómo llegó a
+esto»**, en la fase de lectura, junto al motor de OCR, su latencia y sus banderas de
+calidad. Es lo que un operador necesita para decidir en cinco segundos si el agente
+leyó mal o interpretó mal. Cada corrida lo guarda además en `logs/runs/<recibo>.json`.
 
 ### Verificación de procedencia
 
@@ -132,6 +134,10 @@ La comparación no es literal: el OCR escribe `RH 33,90` donde el modelo devuelv
 `33.9`, y marcarlo como inventado sería un falso positivo — peor que no tener detector,
 porque hunde la confianza de un dato correcto. Se comparan las variantes de escritura
 (coma decimal, cero final, espacios intercalados) sobre texto normalizado.
+
+Esa verificación es visible en la traza, campo por campo, con su similitud: el
+operador ve `total_amount 639,73 ✓ está en el OCR 1.0` al lado de un
+`supplier_tax_id ✗ no está en el OCR`, y sabe cuál de los dos mirar con lupa.
 
 **Lo que prueba y lo que no:** verifica *procedencia*, no *corrección*. Un número de
 factura leído de la línea de la dirección existe en el texto y aun así es el campo
@@ -166,6 +172,11 @@ que **no toca el LLM en ningún momento**:
 `SKIPPED` es un estado de primera clase: si el modelo no logró leer las líneas, el check
 se declara no evaluable en vez de inventar un resultado. **Un `SKIPPED` nunca
 auto-aprueba** — no verificar no es lo mismo que verificar con éxito.
+
+Eso tiene una consecuencia medida y vale la pena decirla: en los 31 documentos reales
+**ninguno se auto-aprobó**. Los tickets de punto de venta no traen desglose legible, así
+que `suma de líneas` e `impuestos` quedan en `SKIPPED` y la puerta no se abre. Está
+explicado en [limitations.md](docs/limitations.md#9).
 
 ### Política de auto-aprobación
 
@@ -355,6 +366,11 @@ Levanta la base, abre el backend en su propia ventana, espera a `/health`, **pre
 los modelos** con un documento de calentamiento, abre el dashboard y lanza el navegador.
 Para apagarlo: `.\scripts\run_demo.ps1 -Bajar`.
 
+Es PowerShell, así que **solo sirve en Windows** — que es donde se midió todo esto. En
+Linux y macOS van los pasos 6 y 7, que hacen lo mismo en dos terminales. La única parte
+que no hay que saltarse es el precalentamiento: mandá un `POST /reconcile` con cualquier
+documento antes de abrir la UI.
+
 El precalentamiento importa: la primera petición carga detector, reconocedor y modelo de
 texto —**~78 s medidos**— y sin él ese costo cae sobre la primera factura que suba el
 usuario, que parece un cuelgue. Después de calentar, cada documento tarda ~15 s.
@@ -398,7 +414,7 @@ del OCR y la traza por fases— en `logs/runs/`.
 ### 9. Tests
 
 ```bash
-.venv/Scripts/python -m pytest -q                 # 93 tests
+.venv/Scripts/python -m pytest -q                 # 94 tests
 ```
 
 Los de DB y API se saltan solos si MariaDB no está levantada.
@@ -451,7 +467,7 @@ scripts/
   permalinks.py            Regenera la tabla de permalinks del README
   probe_extraccion.py      Prueba las dos etapas sobre una imagen, sin base de datos
 docs/
-  limitations.md           Los ocho límites conocidos, con casos reales
+  limitations.md           Los nueve límites conocidos, con casos reales
   environment/             Preflight y sondas de introspección del SDK
 logs/runs/                 Un contrato por documento procesado
 ```

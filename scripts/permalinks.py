@@ -39,6 +39,8 @@ PUNTOS = [
      r'if kind == "qvac"', 6),
     ("Verificacion de valores contra el texto OCR", "confidence/detectors.py",
      r"def valor_aparece", 10),
+    ("La evidencia del OCR entra a la traza auditable", "backend/core/orchestrator.py",
+     r"def _evidencia", 5),
     ("Descarga de modelos desde el registry", "scripts/setup_models.py",
      r"async def descargar", 8),
 ]

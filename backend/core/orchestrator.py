@@ -77,6 +77,30 @@ def _parse_extraction(raw: str) -> ExtractedInvoice:
     return ExtractedInvoice.model_validate(payload)
 
 
+def _evidencia(llm: LLMClient) -> dict | None:
+    """Texto crudo del OCR y verificacion de procedencia, si el cliente los produjo.
+
+    Es lo que hace auditable a la extraccion: el track pide que el sistema muestre
+    su razonamiento, y en un pipeline de dos etapas ese razonamiento ES el texto
+    intermedio del OCR. Sin esto la evidencia existia pero moria dentro del cliente,
+    visible solo desde eval/runner.py y nunca en pantalla.
+
+    Se lee con getattr a proposito: el contrato de LLMClient no la exige, y los
+    clientes deterministas (stub, flaky) no la tienen. Devuelven None y la traza
+    queda exactamente como estaba.
+    """
+    ev = getattr(llm, "ultima_evidencia", None)
+    if not ev:
+        return None
+    return {
+        "texto_ocr": ev.get("texto_ocr", ""),
+        "valores_verificados": ev.get("valores_verificados") or {},
+        "ocr": ev.get("ocr") or {},
+        "rotacion": ev.get("rotacion"),
+        "motivo": ev.get("motivo"),
+    }
+
+
 def _extract_with_retries(
     llm: LLMClient,
     image_bytes: bytes,
@@ -103,6 +127,7 @@ def _extract_with_retries(
             TraceStep(
                 phase=Phase.EXTRACTION,
                 summary=f"Documento leido en {attempt + 1} intento(s).",
+                input=_evidencia(llm),
                 output=invoice.model_dump(mode="json"),
                 duration_ms=_elapsed_ms(started),
                 retries=attempt,
@@ -114,6 +139,7 @@ def _extract_with_retries(
         TraceStep(
             phase=Phase.EXTRACTION,
             summary=f"Extraccion fallida tras {max_retries} intentos.",
+            input=_evidencia(llm),
             duration_ms=_elapsed_ms(started),
             retries=max_retries,
             error=last_error,

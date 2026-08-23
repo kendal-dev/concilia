@@ -190,19 +190,22 @@ def _line_field_check(
                 f"{_fmt(valor_po)} {unidad}".strip()
             )
 
+    # Huerfanas y diferencias no se excluyen: una factura puede traer una linea
+    # que no figura en la orden Y ademas cobrar otra con la cantidad cambiada.
+    # Retornar solo lo primero que aparecia descartaba la otra mitad del motivo.
+    observaciones: list[str] = []
     if huerfanas:
         nombres = ", ".join(li.description for li in huerfanas)
-        return Check(
-            name=name, label=label, status=CheckStatus.WARN,
-            detail=f"No figura(n) en la orden: {nombres}.",
-        )
-
+        observaciones.append(f"No figura(n) en la orden: {nombres}")
     if diferencias:
+        observaciones.append("; ".join(diferencias))
+
+    if observaciones:
         return Check(
             name=name, label=label, status=CheckStatus.WARN,
-            detail="; ".join(diferencias),
-            expected=_fmt(getattr(pares[0][1], campo)),
-            actual=_fmt(getattr(pares[0][0], campo)),
+            detail=". ".join(observaciones) + ".",
+            expected=_fmt(getattr(pares[0][1], campo)) if diferencias else None,
+            actual=_fmt(getattr(pares[0][0], campo)) if diferencias else None,
         )
 
     return Check(

@@ -1,7 +1,7 @@
 """Detectores de honestidad. El corazon del proyecto.
 
 El track lo dice textual: *"an agent that flags uncertainty beats one that confidently
-hallucinates a number"*. Estos dos detectores son como el sistema se entera de que no
+hallucinates a number"*. Este detector es como el sistema se entera de que no
 sabe, antes de decir un numero.
 """
 from difflib import SequenceMatcher
@@ -17,7 +17,6 @@ def normalizar_espacios(s: str) -> str:
 
 
 UMBRAL_SPAN = 0.90
-TOLERANCIA_ARITMETICA = 1.0
 
 
 def span_verificado(span, raw_text, umbral=UMBRAL_SPAN):
@@ -94,36 +93,3 @@ def valor_aparece(valor, texto_ocr, es_numero=False):
     if not ok and "".join(aguja.split()) in compacto:
         return True, 1.0
     return ok, ratio
-
-
-def coherencia_aritmetica(items, total, tolerancia=TOLERANCIA_ARITMETICA):
-    """Suma(qty * unit_price) contra el total declarado.
-
-    Devuelve (estado, delta) con estado en {"ok", "desvia", "no_aplica"}.
-    Un recibo sin items desglosados (taxi, mercado) NO se penaliza: castigarlo seria
-    inventar incertidumbre donde no la hay.
-    """
-    if total is None:
-        return "no_aplica", None
-    if not items:
-        return "no_aplica", None
-    suma = 0.0
-    usados = 0
-    for it in items:
-        q = _num(it.get("qty"))
-        pu = _num(it.get("unit_price"))
-        if q is None or pu is None:
-            continue
-        suma += q * pu
-        usados += 1
-    if usados == 0:
-        return "no_aplica", None
-    delta = round(suma - float(total), 2)
-    return ("ok" if abs(delta) <= tolerancia else "desvia"), delta
-
-
-def _num(v):
-    try:
-        return float(v)
-    except (TypeError, ValueError):
-        return None

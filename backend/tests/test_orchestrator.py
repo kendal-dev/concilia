@@ -4,6 +4,7 @@ No requieren MariaDB corriendo: lo que se prueba aca es la logica de fiabilidad,
 no el SQL. El SQL se prueba en test_db_tool.py contra la base real.
 """
 
+import json
 from decimal import Decimal
 
 import pytest
@@ -277,3 +278,79 @@ def test_los_checks_llegan_al_prompt_de_razonamiento(erp):
     razonamiento = next(s for s in result.trace.steps if s.phase.value == "reasoning")
     assert "VERIFICACIONES YA EJECUTADAS" in razonamiento.input
     assert "cantidad vs OC" in razonamiento.input
+
+# ---------------------------------------------------------------------
+# Evidencia de la etapa 1 en la traza
+# ---------------------------------------------------------------------
+
+class ConEvidencia(StubLLMClient):
+    """Cliente de prueba que si expone `ultima_evidencia`, como hace QvacLLMClient.
+
+    Sirve para probar el puente sin arrastrar el SDK ni cargar un modelo: lo que
+    se verifica es que el orquestador adjunta la evidencia a la traza, no como la
+    produce el cliente real.
+    """
+
+    def __init__(self, filename: str = "", texto: str = "TOTAL Bs 3390.00") -> None:
+        super().__init__(filename)
+        self.ultima_evidencia = {
+            "texto_ocr": texto,
+            "valores_verificados": {
+                "total_amount": {"valor": "3390.00", "aparece_en_ocr": True,
+                                 "similitud": 1.0},
+                "supplier_tax_id": {"valor": "4820156023", "aparece_en_ocr": False,
+                                    "similitud": 0.41},
+            },
+            "ocr": {"engine": "qvac-ggml-ocr/easyocr", "duration_s": 9.8,
+                    "bloques": 14, "quality_flags": []},
+            "rotacion": None,
+        }
+
+
+def test_sin_evidencia_la_traza_queda_igual_que_antes(erp):
+    """Los motores deterministas no producen evidencia y no deben romper nada."""
+    result = run(StubLLMClient("factura_match.jpg"), "factura_match.jpg")
+    extraccion = next(s for s in result.trace.steps if s.phase.value == "extraction")
+    assert extraccion.input is None
+
+
+def test_el_texto_del_ocr_llega_a_la_traza(erp):
+    """El pipeline de dos etapas solo vale si el texto intermedio es visible."""
+    result = run(ConEvidencia("factura_match.jpg"), "factura_match.jpg")
+    extraccion = next(s for s in result.trace.steps if s.phase.value == "extraction")
+    assert extraccion.input["texto_ocr"] == "TOTAL Bs 3390.00"
+    assert extraccion.input["ocr"]["engine"] == "qvac-ggml-ocr/easyocr"
+
+
+def test_la_procedencia_de_cada_valor_llega_a_la_traza(erp):
+    """Un valor que no aparece en el texto del OCR fue inventado, y hay que verlo."""
+    result = run(ConEvidencia("factura_match.jpg"), "factura_match.jpg")
+    verificados = next(
+        s for s in result.trace.steps if s.phase.value == "extraction"
+    ).input["valores_verificados"]
+
+    assert verificados["total_amount"]["aparece_en_ocr"] is True
+    assert verificados["supplier_tax_id"]["aparece_en_ocr"] is False
+
+
+def test_la_evidencia_tambien_se_adjunta_cuando_la_extraccion_falla(erp):
+    """Es cuando mas se necesita: muestra QUE leyo el OCR si el modelo no pudo."""
+
+    class SiempreRota(ConEvidencia):
+        def extract_invoice(self, image_bytes, feedback=None):
+            return "no soy JSON"
+
+    result = run(SiempreRota("factura_match.jpg"), "factura_match.jpg", max_retries=2)
+
+    assert result.verdict is Verdict.UNCERTAIN
+    extraccion = next(s for s in result.trace.steps if s.phase.value == "extraction")
+    assert extraccion.error
+    assert extraccion.input["texto_ocr"] == "TOTAL Bs 3390.00"
+
+
+def test_la_evidencia_sobrevive_la_serializacion_de_la_traza(erp):
+    """La traza va a una columna JSON; si la evidencia no serializa, se pierde."""
+    run(ConEvidencia("factura_match.jpg"), "factura_match.jpg")
+    traza = json.loads(erp["trace"].model_dump_json())
+    extraccion = next(s for s in traza["steps"] if s["phase"] == "extraction")
+    assert extraccion["input"]["texto_ocr"] == "TOTAL Bs 3390.00"
